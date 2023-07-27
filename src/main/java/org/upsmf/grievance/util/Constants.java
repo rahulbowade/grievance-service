@@ -248,7 +248,7 @@ public class Constants {
 		public static final int PORT = 465;
 		public static final boolean SSL = true;
 		public static final String USER = "apikey";
-		public static final String PSWRD = "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";
+		public static final String PSWRD = "";
 		public static final String EMAIL = "shishir.suman@tarento.com";
 		public static final String ALIAS = "grievance-desk.support";
 	}
@@ -256,7 +256,7 @@ public class Constants {
 	public static final String HOST = "smtp.sendgrid.net";
 	public static final String FROM = "shishir.suman@tarento.com";
 	public static final String USER = "apikey";
-	public static final String PSWRD = "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";
+	public static final String PSWRD = "";
 	public static final String LOGO_URL = "https://cabhound-static.s3.amazonaws.com/insuranceDoc/claim/tarento_logo.png";
 	public static final String ALIAS = "auroradesk.support";
 
