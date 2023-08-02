@@ -446,7 +446,7 @@ public class UserDaoImpl implements UserDao {
 	public Long checkUserNameExists(String username) {
 		Long userId;
 		try {
-			userId = jdbcTemplate.queryForObject("SELECT id FROM user WHERE username = ?", new Object[] { username },
+			userId = jdbcTemplate.queryForObject("SELECT \"user\".id FROM \"user\" WHERE username =?", new Object[] { username },
 					Long.class);
 		} catch (Exception e) {
 			return 0l;
@@ -609,7 +609,7 @@ public class UserDaoImpl implements UserDao {
 		if (isPasswordMatch(changePasswordDto.getUserId(), changePasswordDto.getOldPass())) {
 			int count = jdbcTemplate.update(Sql.Common.UPDATE_PSWRD,
 					new Object[] { OneWayHashing.encryptVal(changePasswordDto.getNewPass()),
-							DateUtil.getFormattedDateInUTC(new Date()), changePasswordDto.getUserId(),
+							 changePasswordDto.getUserId(),
 							OneWayHashing.encryptVal(changePasswordDto.getOldPass()) });
 			if (count > 0) {
 				resposne = true;
@@ -654,7 +654,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			String encryptVal = OneWayHashing.encryptVal(password);
 			count = jdbcTemplate.update(Sql.Common.SAVE_FORGOT_PSWRD,
-					new Object[] { encryptVal, DateUtil.getFormattedDateInUTC(new Date()), userId });
+					new Object[] { encryptVal, userId });
 			LOGGER.info("Password : {}", encryptVal);
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));

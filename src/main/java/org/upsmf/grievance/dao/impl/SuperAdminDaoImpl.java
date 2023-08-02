@@ -131,7 +131,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 						return statement;
 					}
 				}, keyHolder);
-				organization.setId((Long) keyHolder.getKey());
+				organization.setId(keyHolder.getKey().longValue());
 				MasterDataManager.getOrgIdAndOrgNameMap().put(organization.getId(), organization.getOrgName());
 			} catch (Exception e) {
 				LOGGER.error(
@@ -139,7 +139,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 			}
 			if (insertSuccessful > 0) {
 				jdbcTemplate.update(Sql.UserQueries.NEW_ORG_AUTH, new Object[] { organization.getId(),
-						organization.getAuthId(), organization.getUrl(), organization.getEmailDomain() });
+						Integer.valueOf(organization.getAuthId()), organization.getUrl(), organization.getEmailDomain() });
 				orgSetup(organization, userId);
 				return organization;
 			}
