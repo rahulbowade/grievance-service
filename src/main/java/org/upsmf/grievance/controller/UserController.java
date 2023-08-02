@@ -107,7 +107,7 @@ public class UserController {
 		String name = MasterDataManager.getRoleMap().get(MasterDataManager.getUserRoleMap().get(user.getId()))
 				.getName();
 		if (userId == 0
-				&& (name.equalsIgnoreCase(Sql.Common.SUPER_ADMIN) || name.equalsIgnoreCase(Sql.Common.ORGADMIN))) {
+				&& (name.equalsIgnoreCase(Sql.Common.SUPER_ADMIN) || name.equalsIgnoreCase(Sql.Common.GRIEVANCE_ADMIN))) {
 			User isAdded = userService.save(file, user.getId(), profile);
 			if (isAdded != null) {
 				MasterDataManager.getAllOrgUsers();

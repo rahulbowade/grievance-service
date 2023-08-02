@@ -65,7 +65,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 			MasterDataManager.getUserOrgMap().get(userId);
 			int orgId = getOrganizationByUserId(userId);
 			Long roleId = jdbcTemplate.queryForObject(Sql.UserQueries.GET_ROLE_ID_BY_ORG,
-					new Object[] { orgId, Sql.Common.ORGADMIN }, Long.class);
+					new Object[] { orgId, Sql.Common.GRIEVANCE_ADMIN}, Long.class);
 
 			Integer response = jdbcTemplate.update(Sql.UserQueries.ADD_ADMIN,
 					new Object[] { roleId.intValue(), userId });
@@ -87,7 +87,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 			int orgId = getOrganizationByUserId(userId);
 			MasterDataManager.getUserOrgMap().get(userId);
 			Long roleId = jdbcTemplate.queryForObject(Sql.UserQueries.GET_ROLE_ID_BY_ORG,
-					new Object[] { orgId, Sql.Common.ENDUSER }, Long.class);
+					new Object[] { orgId, Sql.Common.NODAL_OFFICER}, Long.class);
 			Integer response = jdbcTemplate.update(Sql.UserQueries.DELETE_ADMIN,
 					new Object[] { roleId.intValue(), userId });
 			if (response > 0) {
@@ -157,7 +157,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 					@Override
 					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 						String[] returnValColumn = new String[] { "id" };
-						PreparedStatement statement = connection.prepareStatement(Sql.Organization.NEW_ORG_ADMIN_USER,
+						PreparedStatement statement = connection.prepareStatement(Sql.Organization.NEW_GRIEVANCE_ADMIN_USER,
 								returnValColumn);
 						statement.setString(1, org.getAdminDetails().get(0).getName());
 						statement.setString(2, org.getAdminDetails().get(0).getUsername());
@@ -177,13 +177,13 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 		return null;
 	}
 
-	public void orgSetup(final Organization org, Long newOrgAdminUserId) {
+	public void orgSetup(final Organization org, Long newGrievanceAdminUserId) {
 		Long id = org.getId();
 		if (id > 0) {
 			LOGGER.info("Org Id: {}", id);
 		}
-		if (newOrgAdminUserId > 0) {
-			LOGGER.info("User Id : {}", newOrgAdminUserId);
+		if (newGrievanceAdminUserId > 0) {
+			LOGGER.info("User Id : {}", newGrievanceAdminUserId);
 		}
 		String password = null;
 		int adminRoleId = 0;
@@ -197,27 +197,27 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 				List<Integer> actions = new ArrayList<>();
 				Integer roleId = jdbcTemplate.queryForObject(Sql.Organization.GET_ROLE_ID_BY_ORG,
 						new Object[] { id, String.valueOf(roleName) }, Integer.class);
-				if (String.valueOf(roleName).equals(Common.ORGADMIN)) {
+				if (String.valueOf(roleName).equals(Common.GRIEVANCE_ADMIN)) {
 					adminRoleId = roleId;
-					actions = Constants.getOrgadminactions();
+					actions = Constants.getGrievanceAdminActions();
 				}
-				if (String.valueOf(roleName).equals(Common.ENDUSER)) {
-					actions = Constants.getEnduseractions();
+				if (String.valueOf(roleName).equals(Common.NODAL_OFFICER)) {
+					actions = Constants.getNodalOfficerActions();
 				}
 				for (int i = 0; i < actions.size(); i++) {
 					jdbcTemplate.update(Sql.Organization.ADD_ROLE_PERMISSION, new Object[] { roleId, actions.get(i) });
 				}
 			}
-			jdbcTemplate.update(Sql.Organization.NEW_ORG_ADMIN_ROLE, new Object[] { newOrgAdminUserId, adminRoleId });
+			jdbcTemplate.update(Sql.Organization.NEW_GRIEVANCE_ADMIN_ROLE, new Object[] { newGrievanceAdminUserId, adminRoleId });
 			MasterDataManager.getAllUserRoles();
-			jdbcTemplate.update(Sql.Organization.FIRST_ADMIN_COMP, new Object[] { id, newOrgAdminUserId });
-			MasterDataManager.getUserOrgMap().put(newOrgAdminUserId, id);
+			jdbcTemplate.update(Sql.Organization.FIRST_ADMIN_COMP, new Object[] { id, newGrievanceAdminUserId });
+			MasterDataManager.getUserOrgMap().put(newGrievanceAdminUserId, id);
 			password = ProjectUtil.getRandomStringVal().trim();
 			if (!StringUtils.isBlank(password)) {
 				LOGGER.info("New Admin Password : {}", password);
 			}
 			String encodedPwd = OneWayHashing.encryptVal(password);
-			jdbcTemplate.update(Sql.Organization.NEW_ORG_ADMIN_PSWRD, new Object[] { encodedPwd, newOrgAdminUserId });
+			jdbcTemplate.update(Sql.Organization.NEW_GRIEVANCE_ADMIN_PSWRD, new Object[] { encodedPwd, newGrievanceAdminUserId });
 			if (!StringUtils.isBlank(password)) {
 				LOGGER.info("Password : {}", password);
 			}
@@ -373,7 +373,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 	public Organization getOrganizationByIdV2(Long id) {
 		try {
 			OrgMapper orgMapper = new SqlDataMapper().new OrgMapper();
-			jdbcTemplate.query(Sql.Organization.ORG_BY_ID, new Object[] { true, true, id, id, Sql.Common.ORGADMIN },
+			jdbcTemplate.query(Sql.Organization.ORG_BY_ID, new Object[] { true, true, id, id, Sql.Common.GRIEVANCE_ADMIN},
 					orgMapper);
 			String url = getOrgLogo(orgMapper.getOrg());
 			if (!url.isEmpty()) {

@@ -25,23 +25,24 @@ public final class Sql {
 
 		}
 
-		public static final String VERIFY_PSWRD = "SELECT id FROM user WHERE password = ? AND name = ? ";
+		public static final String VERIFY_PSWRD = "SELECT id FROM \"user\" WHERE password = ? AND name = ? ";
 		public static final String WHERE_CLAUSE = " WHERE ";
 		public static final String AND_CONDITION = " AND ";
 		public static final String OR_CONDITION = " OR ";
 		public static final String OPEN_BRACE = "(";
 		public static final String CLOSE_BRACE = ")";
-		public static final String CHECK_EMAIL_IN_USE = "SELECT id FROM user  WHERE username=? AND is_active IS TRUE";
+		public static final String CHECK_EMAIL_IN_USE = "SELECT id FROM \"user\"  WHERE username=? AND is_active IS TRUE";
 		public static final String CHECK_OLD_PSWRD = "SELECT pwd FROM password WHERE user_id=?";
 		public static final String UPDATE_PSWRD = "UPDATE password SET pwd=?,updated_date=? WHERE user_id=? and pwd=?";
-		public static final String CHECK_USER_BY_USERNAME = "SELECT id from user where username=?";
+		public static final String CHECK_USER_BY_USERNAME = "SELECT id from \"user\" where username=?";
 		public static final String SAVE_FORGOT_PSWRD = "UPDATE password SET pwd=? , updated_date=? WHERE user_id= ? ";
-		public static final String GET_USER_DETAIL_BY_EMAIL = "Select id, name, username, phone, is_active as isActive, created_date as createdDate, updated_date as updatedDate, img_path as imagePath from user where username=?";
-		public static final String GET_ORG_ID_BY_USER_ID = "SELECT org_id FROM user JOIN user_org where user.id=user_org.user_id and user.id=?";
-		public static final String GET_ALL_USERS_BY_ORG = "Select user.id, name, username, phone, is_active, img_path, created_date, updated_date from user JOIN user_org where user.id=user_org.user_id and user.is_active is true and user_org.org_id=?";
-		public static final String GET_IMAGE_PATH = "SELECT img_path from user where id=?;";
-		public static final String ORGADMIN = "ORGADMIN";
-		public static final String ENDUSER = "ENDUSER";
+		public static final String GET_USER_DETAIL_BY_EMAIL = "Select id, name, username, phone, is_active as isActive, created_date as createdDate, updated_date as updatedDate, img_path as imagePath from \"user\" where username=?";
+		public static final String GET_ORG_ID_BY_USER_ID = "SELECT org_id FROM \"user\",user_org where \"user\".id=user_org.user_id and \"user\".id=?";
+		public static final String GET_ALL_USERS_BY_ORG = "Select \"user\".id, name, username, phone, is_active, img_path, created_date, updated_date from \"user\",user_org where \"user\".id=user_org.user_id \n" +
+				"and \"user\".is_active is true and user_org.org_id=?";
+		public static final String GET_IMAGE_PATH = "SELECT img_path from \"user\" where id=?;";
+		public static final String GRIEVANCE_ADMIN = "GRIEVANCEADMIN";
+		public static final String NODAL_OFFICER = "NODALOFFICER";
 		public static final String SUPER_ADMIN = "SUPERADMIN";
 	}
 
@@ -74,31 +75,31 @@ public final class Sql {
 
 		public static final String GET_ALL_ORG = "SELECT id, org_name as orgName, url as url, logo as logo, domain as emailDomain, color as orgColor,  "
 				+ " created_by as createdBy, created_date as createdDate, is_active as isActive, description as orgDescription FROM organization where is_active is TRUE";
-		public static final String GET_ORG_BY_NAME = "SELECT id FROM organization where org_name=? and is_active=1";
+		public static final String GET_ORG_BY_NAME = "SELECT id FROM organization where org_name=? and is_active is true";
 		public static final String GET_ORG_BY_ID = "select id, org_name as orgName, url as url, logo as logo, domain as emailDomain, color as orgColor,   created_by as createdBy, created_date as createdDate, is_active as isActive, description as orgDescription FROM organization where id = ? and is_active is true";
 		public static final String AND_CONDITION = " AND ";
 		public static final String OR_CONDITION = " OR ";
 		public static final String OPEN_BRACE = "(";
 		public static final String CLOSE_BRACE = ")";
 		public static final String ADD_NEW_ORG = "INSERT INTO organization (org_name, url, logo, created_by, updated_by, description, color, domain) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-		public static final String NEW_ORG_ADMIN_USER = "INSERT INTO user (name, username, phone, img_path) VALUES (?,?,?,?)";
+		public static final String NEW_GRIEVANCE_ADMIN_USER = "INSERT INTO user (name, username, phone, img_path) VALUES (?,?,?,?)";
 		public static final String DELETE_ORG = "UPDATE organization SET is_active = FALSE , updated_by = ? , updated_date = ? WHERE id = ?";
-		public static final String GET_ADMIN_BY_ORG = "SELECT DISTINCT a.id,a.name,a.username,a.phone FROM user a,organization b,roles c, user_org d, user_role e "
+		public static final String GET_ADMIN_BY_ORG = "SELECT DISTINCT a.id,a.name,a.username,a.phone FROM \"user\" a,organization b,roles c, user_org d, user_role e "
 				+ "WHERE a.id = d.user_id AND a.id = e.user_id " + "AND c.id = ? AND b.id = ? AND a.is_active IS TRUE";
 		public static final String GET_ROLE_ID_BY_ORG = "SELECT id FROM roles where org_id = ? and role_name = ?";
 		public static final String ADD_ORG_ROLES = "insert into roles(role_name, org_id) values (?,?)";
 		public static final String ADD_ROLE_PERMISSION = "insert into role_action(role_id, action_id) values (?,?)";
-		public static final String NEW_ORG_ADMIN_ROLE = "INSERT INTO user_role(user_id,role_id) VALUES (?,?)";
-		public static final String NEW_ORG_ADMIN_PSWRD = "INSERT INTO password (pwd, user_id) VALUES (?,?)";
+		public static final String NEW_GRIEVANCE_ADMIN_ROLE = "INSERT INTO user_role(user_id,role_id) VALUES (?,?)";
+		public static final String NEW_GRIEVANCE_ADMIN_PSWRD = "INSERT INTO password (pwd, user_id) VALUES (?,?)";
 		public static final String FIRST_ADMIN_COMP = "INSERT INTO user_org (org_id,user_id) VALUES (?,?)";
 		public static final String UPDATE_ORG = "UPDATE organization SET org_name = ?,logo = ?,updated_date = ?,updated_by = ?,url = ?,description = ?,color = ?, domain = ? WHERE id = ?";
-		public static final String GET_ORG_BY_USERID = "select user_org.org_id as id, logo from user, user_org, organization where user.id=user_org.user_id and user_org.org_id=organization.id and user.id= ?";
+		public static final String GET_ORG_BY_USERID = "select user_org.org_id as id, logo from \"user\", user_org, organization where \"user\".id=user_org.user_id and user_org.org_id=organization.id and \"user\".id= ?";
 		public static final String CHECK_IF_ROLE_EXISTS = "select exists(select id from roles where role_name = ? and org_id = ?)";
 		public static final String CHECK_IF_ACTION_EXISTS = "SELECT exists(select id from action where id=?);";
 		public static final String GET_ROLE_ID_FROM_ORG = "select id from roles where role_name = ? and org_id = ?";
 		public static final String DELETE_ACTION = "delete from role_action where role_id=?";
 
-		public static final String ORG_BY_ID = "select organization.id as id, organization.org_name as orgName, organization.url, organization.logo, organization.domain as domain, organization.color as color,organization.created_by as createdBy, organization.created_date as createdDate, organization.is_active as isActive, organization.description as description, user.id as userId, user.name, user.username, user.phone from organization, roles, user, user_org, user_role where user.id = user_org.user_id and user.id = user_role.user_id and user_org.org_id = organization.id and organization.id = roles.org_id and organization.is_active = ? and user.is_active = ? and organization.id = ? and roles.id = (select id from roles where org_id = ? and role_name = ?)";
+		public static final String ORG_BY_ID = "select organization.id as id, organization.org_name as orgName, organization.url, organization.logo, organization.domain as domain, organization.color as color,organization.created_by as createdBy, organization.created_date as createdDate, organization.is_active as isActive, organization.description as description, \"user\".id as userId, \"user\".name, \"user\".username, \"user\".phone from organization, roles, user, user_org, user_role where \"user\".id = user_org.user_id and \"user\".id = user_role.user_id and user_org.org_id = organization.id and organization.id = roles.org_id and organization.is_active = ? and \"user\".is_active = ? and organization.id = ? and roles.id = (select id from roles where org_id = ? and role_name = ?)";
 	}
 
 	public final class Helpdesk {
@@ -135,15 +136,15 @@ public final class Sql {
 		public static final String GET_WORKFLOW_FOR_TICKET_LIST = "SELECT t.id, ticket_id as ticketId, workflow_id as workFlowId, name, time, status FROM ticket_workflow t, workflow_stage w where w.id=t.workflow_id and ticket_id IN ";
 
 		public static final String GET_HELPDESK_BY_USER_ID = "SELECT hlpdsk.id as id, hlpdsk.helpdesk_name as name, hlpdsk.is_active as isActive, hlpdsk.color as color from helpdesk hlpdsk where id IN (SELECT distinct id FROM helpdesk AS h LEFT JOIN helpdesk_admin AS ha ON h.id=ha.helpdesk_id LEFT JOIN helpdesk_users AS hu ON h.id = hu.helpdesk_id where is_active is true and (ha.user_id=? or hu.user_id=?)) or allow_all_users is true and is_active is true and org_id=?";
-		public static final String GET_HELPDESK_USER_BY_ID = " SELECT id as id, name as name, username as userName, img_path from user where id IN (select user_id from helpdesk_users where helpdesk_id = ? )  ";
+		public static final String GET_HELPDESK_USER_BY_ID = " SELECT id as id, name as name, username as userName, img_path from \"user\" where id IN (select user_id from helpdesk_users where helpdesk_id = ? )  ";
 		public static final String DELETE_CHECKLIST_FOR_TICKET = "DELETE from ticket_checklist WHERE ticket_id = ?";
-		public static final String GET_HELPDESK_ADMIN_BY_ID = " SELECT id as id, name as name, username as userName, img_path from user where id IN (select user_id from helpdesk_admin where helpdesk_id = ? )  ";
+		public static final String GET_HELPDESK_ADMIN_BY_ID = " SELECT id as id, name as name, username as userName, img_path from \"user\" where id IN (select user_id from helpdesk_admin where helpdesk_id = ? )  ";
 		public static final String GET_APP_ORG_ID = "SELECT org_id FROM organization_app where app_id=?;";
-		public static final String GET_USER_DETAILS_FOR_HELPDESK = "SELECT user_id as id, name as name, username as userName, img_path from user, user_org where is_active is true and user.id=user_org.user_id and org_id=?";
+		public static final String GET_USER_DETAILS_FOR_HELPDESK = "SELECT user_id as id, name as name, username as userName, img_path from \"user\", user_org where is_active is true and \"user\".id=user_org.user_id and org_id=?";
 
-		public static final String GET_HELPDESK_ADMIN_USER = "select distinct user.id, name as name, username, img_path as imagePath"
-				+ " from user, helpdesk_admin " + "where user.id = helpdesk_admin.user_id"
-				+ " and helpdesk_admin.helpdesk_id = ?  and user.is_active = true";
+		public static final String GET_HELPDESK_ADMIN_USER = "select distinct \"user\".id, name as name, username, img_path as imagePath"
+				+ " from \"user\", helpdesk_admin " + "where \"user\".id = helpdesk_admin.user_id"
+				+ " and helpdesk_admin.helpdesk_id = ?  and \"user\".is_active = true";
 		public static final String UPDATE_HELPDESK_CHANNELS = "update helpdesk set direct = ?, playstore = ?, appstore = ?, aurora_sdk = ? where id = ? and org_id = ?";
 	}
 
@@ -190,8 +191,8 @@ public final class Sql {
 		public static final String GET_HELPDESK_ID = "select exists(select id from helpdesk_app where helpdesk_id=? and app_id = ?)";
 		public static final String GET_APP_ID_APP_KEY = "select id FROM application where url = ? and is_active is true;";
 		public static final String CHECK_IF_APP_NAME_EXISTS = "select exists(select id FROM application where url = ? and is_active is true);";
-		public static final String CHECK_IF_TICKET_EXIST = "select exists(select id from ticket where description = ? and active is true and requested_by in (select id from user where username=? and is_active is true) LIMIT 1);";
-		public static final String CHECK_IF_TICKET_EXISTS = "select exists(select id from ticket where reviewId = ? and active is true and requested_by in (select id from user where username=? and is_active is true) LIMIT 1);";
+		public static final String CHECK_IF_TICKET_EXIST = "select exists(select id from ticket where description = ? and active is true and requested_by in (select id from \"user\" where username=? and is_active is true) LIMIT 1);";
+		public static final String CHECK_IF_TICKET_EXISTS = "select exists(select id from ticket where reviewId = ? and active is true and requested_by in (select id from \"user\" where username=? and is_active is true) LIMIT 1);";
 		public static final String GET_APP_ID_FROM_APP_KEY = "select id FROM application where app_key = ? and is_active is true;";
 
 		public static final String CHECK_IF_UPDATE_EXISTS = "select exists(select id from ticket_updates where updates = ? and active is true and created_date=? limit 1);";
@@ -209,13 +210,16 @@ public final class Sql {
 		}
 
 		public static final String SELECT_USER_BY_TOKEN = "SELECT \"user\".id as id FROM \"user\",\"user_authentication\" WHERE auth_token = ? and \"user\".is_active is true and \"user\".id=user_authentication.user_id;";
-		public static final String SELECT_USER_ON_USERNAME = "SELECT user.id as id, user.name as name, user.username as username, user_org.org_id as orgId, "
-				+ " user.is_active as isActive, pwd.pwd as password from user, user_org, password pwd where "
-				+ " user.id = user_org.user_id and pwd.user_id = user.id and username = ?";
+		public static final String SELECT_USER_ON_USERNAME = "SELECT \"user\".id AS id, \"user\".name AS name, \"user\".username AS username, user_org.org_id AS orgId,\n" +
+				"\"user\".is_active AS isActive, pwd.pwd AS password\n" +
+				"FROM \"user\"\n" +
+				"JOIN user_org ON \"user\".id = user_org.user_id\n" +
+				"JOIN password pwd ON pwd.user_id = \"user\".id\n" +
+				"WHERE \"user\".username = ?";
 		public static final String SELECT_USER_ROLES_ON_USERNAME = "SELECT usr.id as id, usr.name as name, usr.username as username, usr.is_active as isActive, "
 				+ " usrorg.org_id as orgId, " + " pwd.pwd as password, "
 				+ " role.role_name as roleName, role.id as roleId, role.org_id as roleOrgId "
-				+ " from user usr LEFT JOIN user_org usrorg ON usr.id = usrorg.user_id  "
+				+ " from \"user\" usr LEFT JOIN user_org usrorg ON usr.id = usrorg.user_id  "
 				+ " LEFT JOIN password pwd ON pwd.user_id = usr.id "
 				+ " LEFT JOIN user_role usrrole ON usr.id = usrrole.user_id  "
 				+ " LEFT JOIN roles role ON usrrole.role_id = role.id " + Common.WHERE_CLAUSE
@@ -225,7 +229,7 @@ public final class Sql {
 				+ " role.role_name as roleName, role.id as roleId, role.org_id as roleOrgId, "
 				+ " actn.id as actionId, actn.name as actionName, actn.display_name as actionDisplayName, actn.query_params as actionQueryParams, "
 				+ " actn.service_code as actionServiceCode, actn.url as actionUrl "
-				+ " from user usr LEFT JOIN user_org usrorg ON usr.id = usrorg.user_id  "
+				+ " from \"user\" usr LEFT JOIN user_org usrorg ON usr.id = usrorg.user_id  "
 				+ " LEFT JOIN password pwd ON pwd.user_id = usr.id "
 				+ " LEFT JOIN user_role usrrole ON usr.id = usrrole.user_id "
 				+ " LEFT JOIN roles role ON usrrole.role_id = role.id "
@@ -235,15 +239,15 @@ public final class Sql {
 		public static final String MAP_USER_TO_ROLE = "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)";
 		public static final String REMOVE_USER_ROLE_MAP = "DELETE FROM user_role WHERE user_id = ? ";
 
-		public static final String UPDATE_USER_PROFILE_PROFILE_IMAGE = "UPDATE user SET img_path = ? WHERE id = ?";
+		public static final String UPDATE_USER_PROFILE_PROFILE_IMAGE = "UPDATE \"user\" SET img_path = ? WHERE id = ?";
 
 		public static final String GET_USER_ACTIONS = "Select action.id, action.display_name as displayName, name, url from action inner join role_action on role_action.action_id = action.id where role_action.role_id = ?";
-		public static final String USER_PROFILE_FETCH = "select * from user usr where id=? ";
-		public static final String USER_DATA = "select COUNT(*) from user where username=?";
-		public static final String USER = "select * from user where id=?";
+		public static final String USER_PROFILE_FETCH = "select * from \"user\" usr where id=? ";
+		public static final String USER_DATA = "select COUNT(*) from \"user\" where username=?";
+		public static final String USER = "select * from \"user\" where id=?";
 		public static final String GET_USER_AUTH_DETAILS = "SELECT id, user_id as userId, auth_token FROM user_authentication WHERE id=?";
-		public static final String SAVE_USER = "INSERT INTO user(name,username,phone,img_path) VALUES (?,?,?,?)";
-		public static final String SAVE_ANONYMOUS_USER = "INSERT INTO user(name,username,phone,img_path,is_anonymous) VALUES (?,?,?,?,?)";
+		public static final String SAVE_USER = "INSERT INTO \"user\"(name,username,phone,img_path) VALUES (?,?,?,?)";
+		public static final String SAVE_ANONYMOUS_USER = "INSERT INTO \"user\"(name,username,phone,img_path,is_anonymous) VALUES (?,?,?,?,?)";
 		public static final String SAVE_USER_AUTHENTICATION = "INSERT INTO user_authentication(user_id,auth_token) VALUES (?,?)";
 		public static final String GET_USER_ROLE = "SELECT user_id, role_id FROM retail_user_role WHERE user_id=?";
 		public static final String GET_ROLES_FOR_USER = "select ur.role_id as roleId, r.role_name as roleName from roles r, user_role ur where r.id = ur.role_id and ur.user_id = ?";
@@ -253,9 +257,9 @@ public final class Sql {
 		public static final String OR_CONDITION = " OR ";
 
 		public static final String UPDATE_USER = "UPDATE user SET name = ?,username = ?, phone = ?, is_active = ?, img_path = ? where id = ? ";
-		public static final String GET_USER_COUNT = "SELECT count(*) FROM user usr";
-		public static final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM user usr where usr.is_active = ? ";
-		public static final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM user usr LEFT JOIN user_role ur ON usr.id = ur.user_id where ur.role_id = ? and usr.is_active IS TRUE";
+		public static final String GET_USER_COUNT = "SELECT count(*) FROM \"user\" usr";
+		public static final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM \"user\" usr where usr.is_active = ? ";
+		public static final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM \"user\" usr LEFT JOIN user_role ur ON usr.id = ur.user_id where ur.role_id = ? and usr.is_active IS TRUE";
 		public static final String GET_ROLE_COUNT = "SELECT count(*) FROM roles";
 
 		public static final String INVALIDATE_TOKEN = "DELETE from user_authentication WHERE auth_token = ? ";
@@ -383,9 +387,9 @@ public final class Sql {
 	public static final String UPDATE_USER = "UPDATE user SET name = ?, username = ? , is_active = ? where id = ? ";
 	public static final String UPDATE_USER_PROFILE = "UPDATE user_profile SET name = ?, email = ?, phone_number = ?,"
 			+ " updated_by = ?  WHERE user_id = ? ";
-	public static final String GET_USER_COUNT = "SELECT count(*) FROM user usr";
-	public static final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM user usr where usr.is_active = ? ";
-	public static final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM user usr LEFT JOIN retail_user_role usrrole ON usr.id = usrrole.user_id where usrrole.role_id = ? "
+	public static final String GET_USER_COUNT = "SELECT count(*) FROM \"user\" usr";
+	public static final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM \"user\" usr where usr.is_active = ? ";
+	public static final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM \"user\" usr LEFT JOIN retail_user_role usrrole ON usr.id = usrrole.user_id where usrrole.role_id = ? "
 			+ "and usr.is_active IS TRUE";
 	public static final String GET_ROLE_COUNT = "SELECT count(*) FROM retail_role";
 
@@ -394,8 +398,8 @@ public final class Sql {
 	public static final String CHECK_USER_DEVICE_TOKEN = "SELECT COUNT(*) FROM user_device WHERE user_id = ? AND device_token = ? ";
 	public static final String GET_S3_ACCESS = "SELECT access_key as accessKey,secret_key as secretKey,bucket_name as bucketName FROM s3_config WHERE id = 1";
 	public static final String GET_CONFIG = "SELECT client_id as clientId,client_secret as clientSecret,refresh_token as refreshToken FROM review_config where org_id=?;";
-	public static final String INSERT_PROFILE_PICTURE = "UPDATE user set img_path=? WHERE id=?";
-	public static final String GET_DP = "SELECT img_path FROM user WHERE id=?";
+	public static final String INSERT_PROFILE_PICTURE = "UPDATE \"user\" set img_path=? WHERE id=?";
+	public static final String GET_DP = "SELECT img_path FROM \"user\" WHERE id=?";
 	public static final String ADD_ATTACHMENT_TO_TICKET = "insert into ticket_attachment(ticket_id, attachment_id) values (?,?);";
 	public static final String INSERT_ATTACHMENT = "insert into attachment_url(url) values (?);";
 }
