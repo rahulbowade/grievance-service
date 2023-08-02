@@ -1,0 +1,11 @@
+[
+	{
+		"operation": "shift",
+		"spec": {
+			"access_token": "accessToken",
+			"expires_in": "expiresIn",
+			"scope": "scope",
+			"token_type": "tokenType"
+		}
+	}
+]

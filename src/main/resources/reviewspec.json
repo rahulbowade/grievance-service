@@ -1,0 +1,43 @@
+[
+	{
+		"operation": "shift",
+		"spec": {
+			"authorName": "userName",
+			"reviewId": "reviewId",
+			"comments": {
+				"0": {
+					"userComment": {
+						"text": "feedback",
+						"starRating": "rate",
+						"lastModified": {
+							"seconds": "userTimestamp"
+						},
+						"androidOsVersion": "osVersion",
+						"appVersionName": "appVersion",
+						"deviceMetadata": {
+							"productName": "deviceName",
+							"manufacturer": "deviceManufacture",
+							"deviceClass": "deviceType"
+						}
+					}
+				},
+				"*": {
+					"developerComment": {
+						"text": "developerComment",
+						"lastModified": {
+							"seconds": "developerTimestamp"
+						}
+					}
+				}
+			}
+		}
+	},
+	{
+		"operation": "default",
+		"spec": {
+			"maxRating": "5",
+			"sourceId": "4",
+			"pinnedTicket": "false"
+		}
+	}
+]
