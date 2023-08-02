@@ -91,7 +91,7 @@ public class Constants {
 	public static final String PROCESS_FAIL = "Process failed, Please try again.";
 
 	public enum userRole {
-		SUPERADMIN, ORGADMIN, ENDUSER;
+		SUPERADMIN, GRIEVANCEADMIN, NODALOFFICER;
 	}
 
 	/**
@@ -135,10 +135,10 @@ public class Constants {
 	private static final List<Integer> superAdminActions = new ArrayList<>(Arrays.asList(1, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 			12, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
 			43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61));
-	private static final List<Integer> orgAdminActions = new ArrayList<>(
+	private static final List<Integer> grievanceAdminActions = new ArrayList<>(
 			Arrays.asList(3, 4, 5, 6, 9, 11, 12, 15, 18, 23, 24, 25, 29, 30, 33, 34, 36, 38, 39, 40, 41, 42, 43, 44, 45,
 					46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61));
-	private static final List<Integer> endUserActions = new ArrayList<>(Arrays.asList(11, 12, 23, 24, 29, 30, 33, 34,
+	private static final List<Integer> nodalOfficerActions = new ArrayList<>(Arrays.asList(11, 12, 23, 24, 29, 30, 33, 34,
 			36, 38, 39, 40, 41, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 60, 61));
 
 	private static Map<Integer, List<String>> actions = createMap();
@@ -211,12 +211,12 @@ public class Constants {
 		return actions;
 	}
 
-	public static List<Integer> getOrgadminactions() {
-		return orgAdminActions;
+	public static List<Integer> getGrievanceAdminActions() {
+		return grievanceAdminActions;
 	}
 
-	public static List<Integer> getEnduseractions() {
-		return endUserActions;
+	public static List<Integer> getNodalOfficerActions() {
+		return nodalOfficerActions;
 	}
 
 	public static Map<Integer, List<String>> getActions() {

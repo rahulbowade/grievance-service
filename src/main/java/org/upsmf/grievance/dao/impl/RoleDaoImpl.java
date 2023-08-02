@@ -157,11 +157,11 @@ public class RoleDaoImpl implements RoleDao {
 					case Common.SUPER_ADMIN:
 						actions = Constants.getSuperadminactions();
 						break;
-					case Common.ORGADMIN:
-						actions = Constants.getOrgadminactions();
+					case Common.GRIEVANCE_ADMIN:
+						actions = Constants.getGrievanceAdminActions();
 						break;
-					case Common.ENDUSER:
-						actions = Constants.getEnduseractions();
+					case Common.NODAL_OFFICER:
+						actions = Constants.getNodalOfficerActions();
 						break;
 					default:
 						actions = new ArrayList<>();

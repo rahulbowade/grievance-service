@@ -89,7 +89,7 @@ public class HelpdeskController {
 				if (MasterDataManager.getRoleMap().get(MasterDataManager.getUserRoleMap().get(userId)).getName()
 						.equalsIgnoreCase(Sql.Common.SUPER_ADMIN)
 						|| MasterDataManager.getRoleMap().get(MasterDataManager.getUserRoleMap().get(userId)).getName()
-								.equalsIgnoreCase(Sql.Common.ORGADMIN)) {
+								.equalsIgnoreCase(Sql.Common.GRIEVANCE_ADMIN)) {
 					return ResponseGenerator.successResponse(helpdesks);
 				} else {
 					return ResponseGenerator.successResponse(checkIfHelpdeskEmpty(user, helpdesks, newHelpdesks));

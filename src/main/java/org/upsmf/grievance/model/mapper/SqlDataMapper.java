@@ -540,7 +540,7 @@ public class SqlDataMapper {
 
 		@Override
 		public Organization mapRow(ResultSet rs, int rowNum) throws SQLException {
-			User orgAdmin = new User();
+			User grievanceAdmin = new User();
 			if (rowNum == 0) {
 				getOrg().setId(rs.getLong(SqlConstants.DbAttributes.ID));
 				getOrg().setOrgName(rs.getString(SqlConstants.DbAttributes.ORGNAME));
@@ -554,11 +554,11 @@ public class SqlDataMapper {
 				getOrg().setOrgDescription(rs.getString(SqlConstants.DbAttributes.DESCRIPTION));
 			}
 
-			orgAdmin.setId(rs.getLong(SqlConstants.DbAttributes.USERID));
-			orgAdmin.setName(rs.getString(SqlConstants.DbAttributes.NAME));
-			orgAdmin.setUsername(rs.getString(SqlConstants.DbAttributes.USERNAME));
-			orgAdmin.setPhone(rs.getString(SqlConstants.DbAttributes.PHONE));
-			adminList.add(orgAdmin);
+			grievanceAdmin.setId(rs.getLong(SqlConstants.DbAttributes.USERID));
+			grievanceAdmin.setName(rs.getString(SqlConstants.DbAttributes.NAME));
+			grievanceAdmin.setUsername(rs.getString(SqlConstants.DbAttributes.USERNAME));
+			grievanceAdmin.setPhone(rs.getString(SqlConstants.DbAttributes.PHONE));
+			adminList.add(grievanceAdmin);
 			getOrg().setAdminDetails(adminList);
 			return null;
 

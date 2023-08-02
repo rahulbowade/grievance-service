@@ -69,9 +69,9 @@ public class ApplicationDaoImpl implements ApplicationDao {
 			}, keyHolder);
 			id = keyHolder.getKey().longValue();
 			app.setId(id);
-			Long orgAppId = jdbcTemplate.queryForObject(Sql.Apps.GET_ID_FROM_ORG_APP,
-					new Object[] { id, user.getOrgId() }, Long.class);
-			if (orgAppId < 1) {
+			Boolean isExists = jdbcTemplate.queryForObject(Sql.Apps.GET_ID_FROM_ORG_APP,
+					new Object[] { id, user.getOrgId() }, Boolean.class);
+			if (!isExists) {
 				jdbcTemplate.update(Apps.MAP_APP_TO_ORG, new Object[] { id, user.getOrgId() });
 			}
 			MasterDataManager.getAppObjectFromAppName();
@@ -195,9 +195,9 @@ public class ApplicationDaoImpl implements ApplicationDao {
 	@Override
 	public boolean mapAppsToHelpdesk(StatusIdMap statusIdMap) {
 		try {
-			Long id = jdbcTemplate.queryForObject(Apps.GET_HELPDESK_ID,
-					new Object[] { statusIdMap.getHelpdeskId(), statusIdMap.getAppId() }, Long.class);
-			if (id == 0) {
+			Boolean isExists = jdbcTemplate.queryForObject(Apps.GET_HELPDESK_ID,
+					new Object[] { statusIdMap.getHelpdeskId(), statusIdMap.getAppId() }, Boolean.class);
+			if (!isExists) {
 				LOGGER.info(QUERY_TO_EXECUTE + Apps.MAP_HELPDESK_APP);
 				jdbcTemplate.update(Apps.MAP_HELPDESK_APP,
 						new Object[] { statusIdMap.getHelpdeskId(), statusIdMap.getAppId() });

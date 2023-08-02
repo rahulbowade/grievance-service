@@ -430,7 +430,6 @@ public class TicketDaoImpl implements TicketDao {
 			jdbcTemplate.update(Sql.Ticket.ADD_TICKET_TO_HELPDESK,
 					new Object[] { ticket.getId(), ticket.getSourceId(), ticket.getHelpdeskId(), ticket.getAppId() });
 		}
-
 	}
 
 	@Override
