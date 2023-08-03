@@ -336,7 +336,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			LOGGER.info(randomPassword);
 			userDao.saveForgotPassword(userId, randomPassword);
 			keyValue.put(JsonKey.PSWRD, randomPassword);
-			SendMail.sendMail(keyValue, emails, Constants.PSWORD_REGENERATED, Constants.FORGOT_PSWORD_VM_FILE);
+			//SendMail.sendMail(keyValue, emails, Constants.PSWORD_REGENERATED, Constants.FORGOT_PSWORD_VM_FILE);
 		}
 		return response;
 	}
