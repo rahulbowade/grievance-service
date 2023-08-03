@@ -33,9 +33,9 @@ public final class Sql {
 		public static final String CLOSE_BRACE = ")";
 		public static final String CHECK_EMAIL_IN_USE = "SELECT id FROM \"user\"  WHERE username=? AND is_active IS TRUE";
 		public static final String CHECK_OLD_PSWRD = "SELECT pwd FROM password WHERE user_id=?";
-		public static final String UPDATE_PSWRD = "UPDATE password SET pwd=?,updated_date=NOW()::timestamp WHERE user_id=? and pwd=?";
+		public static final String UPDATE_PSWRD = "UPDATE password SET pwd=?,updated_date=? WHERE user_id=? and pwd=?";
 		public static final String CHECK_USER_BY_USERNAME = "SELECT id from \"user\" where username=?";
-		public static final String SAVE_FORGOT_PSWRD = "UPDATE password SET pwd=? , updated_date=NOW()::timestamp WHERE user_id= ? ";
+		public static final String SAVE_FORGOT_PSWRD = "UPDATE password SET pwd=? , updated_date=? WHERE user_id= ? ";
 		public static final String GET_USER_DETAIL_BY_EMAIL = "Select id, name, username, phone, is_active as isActive, created_date as createdDate, updated_date as updatedDate, img_path as imagePath from \"user\" where username=?";
 		public static final String GET_ORG_ID_BY_USER_ID = "SELECT org_id FROM \"user\",user_org where \"user\".id=user_org.user_id and \"user\".id=?";
 		public static final String GET_ALL_USERS_BY_ORG = "Select \"user\".id, name, username, phone, is_active, img_path, created_date, updated_date from \"user\",user_org where \"user\".id=user_org.user_id \n" +
@@ -266,7 +266,7 @@ public final class Sql {
 		public static final String FETCH_AUTH_TOKEN_REF = "SELECT id FROM user_authentication WHERE auth_token = ? ";
 		public static final String CHECK_USER_DEVICE_TOKEN = "SELECT COUNT(*) FROM user_device WHERE user_id = ? AND device_token = ? ";
 		public static final String INSERT_PD = "insert into password(pwd, user_id) values(?,?)";
-		public static final String INSERT_ACTION = "INSERT INTO grievance_desk.action(id,name,display_name,url) VALUES(?,?,?,?)";
+		public static final String INSERT_ACTION = "INSERT INTO action(id,name,display_name,url) VALUES(?,?,?,?)";
 		public static final String UPDATE_ACTION = "UPDATE action set name=?, display_name=?, url=? where id=?";
 		public static final String GET_AUTH_TYPE_ID = "select aut_id from organization_auth where org_id = ?";
 		public static final String CHECK_FIRST_ADMIN = "SELECT org_id FROM user_org WHERE user_id=?";
@@ -286,9 +286,7 @@ public final class Sql {
 		public static final String ADD_ADMINS_TO_HELPDESK = "insert into helpdesk_admin(helpdesk_id,user_id) values (?,?)";
 		public static final String ADD_USERS_TO_HELPDESK = "insert into helpdesk_users(helpdesk_id,user_id) values (?,?)";
 		public static final String ADD_CC_TO_TICKET = "insert into ticket_cc(ticket_id,user_id) values (?,?)";
-
-		public static final String GET_USER_ORG_MAP = "SELECT user_org.id as id , user_org.user_id as userId , user_org.org_id as orgId FROM \"user\", \"user_org\" where \"user\".id=user_org.user_id and \"user\".is_anonymous is false";
-		//public static final String GET_USER_ORG_MAP = "SELECT * from grievance_desk.user_org";
+		public static final String GET_USER_ORG_MAP = "SELECT user_org.id as id , user_id as userId , org_id as orgId FROM \"user\", \"user_org\" where \"user\".id=user_org.user_id and \"user\".is_anonymous is false;";
 		public static final String GET_USER_ROLE_MAP = "SELECT id as id, user_id as userId, role_id as roleId FROM user_role ";
 		public static final String GET_APP_ID_HELPDESK_ID = "select helpdesk_id as helpdeskId,app_id as appId from helpdesk_app where is_active is true;";
 		public static final String GET_APP_ID_APP_OBJECT = "SELECT id,app_name as name,logo,url FROM application;";
