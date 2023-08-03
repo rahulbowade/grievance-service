@@ -3,6 +3,7 @@ package org.upsmf.grievance.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,7 +94,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
 
 			jdbcTemplate.update(Apps.UPDATE_APP, new Object[] { app.getName(), app.getAppUrl(), app.getLogo(),
 					app.getSourceId(), app.getActiveStatus(), app.getClientName(), app.getVersion(), user.getId(),
-					DateUtil.getFormattedDateInUTC(new Date()), app.getAppKey(), app.getDescription(), app.getId() });
+					new Timestamp(new Date().getTime()), app.getAppKey(), app.getDescription(), app.getId() });
 			if (app.getActiveStatus()) {
 				jdbcTemplate.update(Sql.Apps.DELETE_ORG_APP, new Object[] { app.getId(), user.getOrgId() });
 			}

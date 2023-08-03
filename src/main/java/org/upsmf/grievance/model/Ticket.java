@@ -1,5 +1,6 @@
 package org.upsmf.grievance.model;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.upsmf.grievance.dto.TicketWorkflowDto;
@@ -25,8 +26,8 @@ public class Ticket {
 	private String developerComment;
 	private int rate;
 	private int maxRating;
-	private String createdTime;
-	private String updatedTime;
+	private Timestamp createdTime;
+	private Timestamp updatedTime;
 	private Long createdTimeTS;
 	private Long updatedTimeTS;
 	private String userName;

@@ -6,13 +6,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +22,7 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.velocity.VelocityContext;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
@@ -609,7 +607,7 @@ public class UserDaoImpl implements UserDao {
 		if (isPasswordMatch(changePasswordDto.getUserId(), changePasswordDto.getOldPass())) {
 			int count = jdbcTemplate.update(Sql.Common.UPDATE_PSWRD,
 					new Object[] { OneWayHashing.encryptVal(changePasswordDto.getNewPass()),
-							 DateUtil.getFormattedDateInUTC(new Date()), changePasswordDto.getUserId(),
+							new Timestamp(new Date().getTime()), changePasswordDto.getUserId(),
 							OneWayHashing.encryptVal(changePasswordDto.getOldPass()) });
 			if (count > 0) {
 				resposne = true;
@@ -654,7 +652,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			String encryptVal = OneWayHashing.encryptVal(password);
 			count = jdbcTemplate.update(Sql.Common.SAVE_FORGOT_PSWRD,
-					new Object[] { encryptVal, DateUtil.getFormattedDateInUTC(new Date()), userId });
+					new Object[] { encryptVal, new Timestamp(new Date().getTime()), userId });
 			LOGGER.info("Password : {}", encryptVal);
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
@@ -887,7 +885,7 @@ public class UserDaoImpl implements UserDao {
 								.source(jsonMap));
 					}
 				}
-				client.bulk(req);
+				client.bulk(req, RequestOptions.DEFAULT);
 				client.close();
 			}
 		} catch (RestClientException e) {

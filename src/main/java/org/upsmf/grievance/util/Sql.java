@@ -266,7 +266,7 @@ public final class Sql {
 		public static final String FETCH_AUTH_TOKEN_REF = "SELECT id FROM user_authentication WHERE auth_token = ? ";
 		public static final String CHECK_USER_DEVICE_TOKEN = "SELECT COUNT(*) FROM user_device WHERE user_id = ? AND device_token = ? ";
 		public static final String INSERT_PD = "insert into password(pwd, user_id) values(?,?)";
-		public static final String INSERT_ACTION = "INSERT INTO action(id,name,display_name,url) VALUES(?,?,?,?)";
+		public static final String INSERT_ACTION = "INSERT INTO action(id,name,display_name,url) VALUES(?,?,?,?);";
 		public static final String UPDATE_ACTION = "UPDATE action set name=?, display_name=?, url=? where id=?";
 		public static final String GET_AUTH_TYPE_ID = "select aut_id from organization_auth where org_id = ?";
 		public static final String CHECK_FIRST_ADMIN = "SELECT org_id FROM user_org WHERE user_id=?";
