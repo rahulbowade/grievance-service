@@ -444,7 +444,7 @@ public class UserDaoImpl implements UserDao {
 	public Long checkUserNameExists(String username) {
 		Long userId;
 		try {
-			userId = jdbcTemplate.queryForObject("SELECT id FROM user WHERE username = ?", new Object[] { username },
+			userId = jdbcTemplate.queryForObject("SELECT \"user\".id FROM \"user\" WHERE username =?", new Object[] { username },
 					Long.class);
 		} catch (Exception e) {
 			return 0l;
