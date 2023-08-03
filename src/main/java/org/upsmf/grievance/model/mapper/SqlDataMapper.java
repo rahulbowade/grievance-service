@@ -505,9 +505,9 @@ public class SqlDataMapper {
 				ticket.setId(rs.getLong(SqlConstants.DbAttributes.TICKETID));
 				ticket.setAppId(rs.getLong(SqlConstants.DbAttributes.APPID));
 				ticket.setPinnedTicket(rs.getBoolean(SqlConstants.DbAttributes.PINNEDTICKET));
-				ticket.setUpdatedTime(rs.getString(SqlConstants.DbAttributes.UPDATEDTIME));
+				ticket.setUpdatedTime(rs.getTimestamp(SqlConstants.DbAttributes.UPDATEDTIME));
 				ticket.setUpdatedTimeTS(rs.getDate(SqlConstants.DbAttributes.UPDATEDTIME).getTime());
-				ticket.setCreatedTime(rs.getString(SqlConstants.DbAttributes.CREATEDTIME));
+				ticket.setCreatedTime(rs.getTimestamp(SqlConstants.DbAttributes.CREATEDTIME));
 				ticket.setCreatedTimeTS(rs.getDate(SqlConstants.DbAttributes.CREATEDTIME).getTime());
 				ticket.setRate(rs.getInt(SqlConstants.DbAttributes.RATING));
 				ticket.setMaxRating(rs.getInt(SqlConstants.DbAttributes.MAXRATING));

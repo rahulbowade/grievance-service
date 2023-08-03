@@ -3,6 +3,7 @@ package org.upsmf.grievance.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class HelpdeskDaoImpl implements HelpdeskDao {
 						statement.setString(1, helpdesk.getName());
 						statement.setLong(2, helpdesk.getOrgId());
 						statement.setLong(3, helpdesk.getCreatedBy());
-						statement.setString(4, DateUtil.getFormattedDateInUTC(new Date()));
+						statement.setTimestamp(4, new Timestamp(new Date().getTime()));
 						statement.setBoolean(5, helpdesk.getIsActive());
 						statement.setString(6, helpdesk.getColor());
 						statement.setString(7, helpdesk.getDescription());
@@ -92,7 +93,7 @@ public class HelpdeskDaoImpl implements HelpdeskDao {
 			try {
 				jdbcTemplate.update(Sql.Helpdesk.UPDATE_HELPDESK,
 						new Object[] { helpdesk.getName(), helpdesk.getUpdatedBy(),
-								DateUtil.getFormattedDateInUTC(new Date()), helpdesk.getIsActive(), helpdesk.getColor(),
+								new Timestamp(new Date().getTime()), helpdesk.getIsActive(), helpdesk.getColor(),
 								helpdesk.getDescription(), helpdesk.getId(), helpdesk.getOrgId() });
 				setHelpdeskChannels(helpdesk);
 				return true;

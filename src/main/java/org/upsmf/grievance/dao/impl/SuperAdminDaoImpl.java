@@ -3,6 +3,7 @@ package org.upsmf.grievance.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -261,7 +262,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 		int value = 0;
 		try {
 			value = jdbcTemplate.update(Sql.Organization.UPDATE_ORG,
-					new Object[] { org.getOrgName(), org.getLogo(), DateUtil.getFormattedDateInUTC(new Date()),
+					new Object[] { org.getOrgName(), org.getLogo(), new Timestamp(new Date().getTime()),
 							org.getUserId(), org.getUrl(), org.getOrgDescription(), org.getOrgColor(),
 							org.getEmailDomain(), org.getId() });
 		} catch (Exception e) {
@@ -289,7 +290,7 @@ public class SuperAdminDaoImpl implements SuperAdminDao {
 	public boolean deleteOrganization(Organization organization) {
 		try {
 			int value = jdbcTemplate.update(Sql.Organization.DELETE_ORG, new Object[] { organization.getUserId(),
-					DateUtil.getFormattedDateInUTC(new Date()), organization.getId() });
+					new Timestamp(new Date().getTime()), organization.getId() });
 			return (value > 0);
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));

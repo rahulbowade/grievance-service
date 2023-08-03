@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,11 +29,13 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.lucene.search.TotalHits;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
@@ -216,11 +219,11 @@ public class TicketDaoImpl implements TicketDao {
 				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 					String[] returnValColumn = new String[] { "id" };
 					PreparedStatement statement = connection.prepareStatement(Sql.Ticket.ADD_TICKET, returnValColumn);
-					ticket.setCreatedTime(DateUtil.getFormattedDateInUTC(new Date()));
-					ticket.setUpdatedTime(DateUtil.getFormattedDateInUTC(new Date()));
+					ticket.setCreatedTime(new Timestamp(new Date().getTime()));
+					ticket.setUpdatedTime(new Timestamp(new Date().getTime()));
 					ticket.setCreatedTimeTS(new Date().getTime());
 					ticket.setUpdatedTimeTS(new Date().getTime());
-					statement.setString(1, ticket.getCreatedTime());
+					statement.setTimestamp(1, ticket.getCreatedTime());
 					if (!StringUtils.isBlank(String.valueOf(ticket.getRate()))) {
 						statement.setLong(2, ticket.getRate());
 					} else {
@@ -257,7 +260,7 @@ public class TicketDaoImpl implements TicketDao {
 							statement.setLong(7, id);
 						}
 					}
-					statement.setString(8, ticket.getUpdatedTime());
+					statement.setTimestamp(8, ticket.getUpdatedTime());
 					statement.setBoolean(9, false);
 					return statement;
 				}
@@ -578,7 +581,7 @@ public class TicketDaoImpl implements TicketDao {
 		List<Ticket> ticketList = null;
 		try {
 			jdbcTemplate.update(Sql.Ticket.ADD_ACTIVITY_LOG,
-					new Object[] { activity, ticketId, DateUtil.getFormattedDateInUTC(new Date()), changesBy });
+					new Object[] { activity, ticketId, new Timestamp(new Date().getTime()), changesBy });
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
 		}
@@ -660,7 +663,7 @@ public class TicketDaoImpl implements TicketDao {
 			String name) {
 		if (values != null && values.length > 0) {
 			jdbcTemplate.update(Sql.Ticket.UPDATE_TICKET_WORKFLOW, new Object[] { true,
-					DateUtil.getFormattedDateInUTC(new Date()), workFlowIds.get(0), ticketTypeDto.getId() });
+					new Timestamp(new Date().getTime()), workFlowIds.get(0), ticketTypeDto.getId() });
 			name = jdbcTemplate.queryForObject(Sql.Ticket.GET_WORKFLOW_NAME, new Object[] { workFlowIds.get(0) },
 					String.class);
 		}
@@ -776,7 +779,7 @@ public class TicketDaoImpl implements TicketDao {
 			if (update.getId() != null) {
 				sendRepliesToReviews(update);
 				jdbcTemplate.update(Sql.Ticket.UPDATE_UPDATES, new Object[] { update.getUpds(), update.isActive(),
-						DateUtil.getFormattedDateInUTC(new Date()), update.getId() });
+						new Timestamp(new Date().getTime()), update.getId() });
 			} else {
 				sendRepliesToReviews(update);
 				List<Long> ccList = getTicketCC(update.getTicketId());
@@ -785,7 +788,7 @@ public class TicketDaoImpl implements TicketDao {
 				ccList.add(requestedBy);
 				ccList.remove(update.getCreatedBy());
 				jdbcTemplate.update(Sql.Ticket.ADD_UPDATES, new Object[] { update.getUpds(), update.getCreatedBy(),
-						update.getTicketId(), DateUtil.getFormattedDateInUTC(new Date()) });
+						update.getTicketId(), new Timestamp(new Date().getTime()) });
 				for (int i = 0; i < ccList.size(); i++) {
 					sendMailToCC(update, ccList, i);
 				}
@@ -1045,7 +1048,7 @@ public class TicketDaoImpl implements TicketDao {
 
 	@Override
 	public boolean updateTicketBasic(MultipartFile file, Ticket ticket) {
-		ticket.setUpdatedTime(DateUtil.getFormattedDateInUTC(new Date()));
+		ticket.setUpdatedTime(new Timestamp(new Date().getTime()));
 		Long loggedInUserId = ticket.getUserId();
 		int status = 0;
 		Long id = ticket.getId();
@@ -1175,7 +1178,7 @@ public class TicketDaoImpl implements TicketDao {
 			newticket.setType(ticketTypeDto.getTypeId());
 			newticket.setOperation(UPDATE);
 			newticket.setStatus(stat);
-			newticket.setUpdatedTime(DateUtil.getFormattedDateInUTC(new Date()));
+			newticket.setUpdatedTime(new Timestamp(new Date().getTime()));
 			newticket.setUpdatedTimeTS(new Date().getTime());
 			ticketsRequestInterceptor.addData(newticket);
 
@@ -1215,7 +1218,7 @@ public class TicketDaoImpl implements TicketDao {
 					});
 			if (values != null && values.length > 0) {
 				jdbcTemplate.update(Sql.Ticket.UPDATE_TICKET_WORKFLOW,
-						new Object[] { true, DateUtil.getFormattedDateInUTC(new Date()), workFlowStages.get(0).getId(),
+						new Object[] { true, new Timestamp(new Date().getTime()), workFlowStages.get(0).getId(),
 								ticketTypeDto.getId() });
 				name = jdbcTemplate.queryForObject(Sql.Ticket.GET_WORKFLOW_NAME, new Object[] { workFlowIds.get(0) },
 						String.class);
@@ -1241,7 +1244,7 @@ public class TicketDaoImpl implements TicketDao {
 			for (int i = 0; i < ticket.getWorkflowStages().size(); i++) {
 				status = jdbcTemplate.update(Sql.Ticket.UPDATE_TICKET_WORKFLOW,
 						new Object[] { ticket.getWorkflowStages().get(i).getStatus(),
-								DateUtil.getFormattedDateInUTC(new Date()),
+								new Timestamp(new Date().getTime()),
 								ticket.getWorkflowStages().get(i).getWorkFlowId(), ticket.getId() });
 			}
 			List<TicketWorkflowDto> workFlow = getWorkflowForTicket(ticket.getId());
@@ -1257,7 +1260,7 @@ public class TicketDaoImpl implements TicketDao {
 			newticket.setId(ticket.getId());
 			newticket.setOperation(UPDATE);
 			newticket.setStatus(newStatus);
-			newticket.setUpdatedTime(DateUtil.getFormattedDateInUTC(new Date()));
+			newticket.setUpdatedTime(new Timestamp(new Date().getTime()));
 			newticket.setUpdatedTimeTS(new Date().getTime());
 			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
 			String email = user.getUsername();
@@ -1299,12 +1302,12 @@ public class TicketDaoImpl implements TicketDao {
 				if (!searchSourceBuilder.toString().equals("{}")) {
 					searchResponse = searchFromTicketElasticData(client, searchSourceBuilder);
 					SearchHit[] hit = searchResponse.getHits().getHits();
-					long total = searchResponse.getHits().getTotalHits();
+					TotalHits total = searchResponse.getHits().getTotalHits();
 					for (SearchHit hits : hit) {
 						String sourceAsMap = hits.getSourceAsString();
 						Gson g = new Gson();
 						TicketElastic ticketElastic = g.fromJson(sourceAsMap, TicketElastic.class);
-						ticketElastic.setTotal(total);
+						ticketElastic.setTotal(total.value);
 						mapper.add(ticketElastic);
 					}
 				}
@@ -1374,7 +1377,7 @@ public class TicketDaoImpl implements TicketDao {
 					.query(QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery())).size(700);
 			searchResponse = searchFromAuroraSdkData(client, searchSourceBuilder);
 			SearchHit[] hit = searchResponse.getHits().getHits();
-			long total = searchResponse.getHits().getTotalHits();
+			TotalHits total = searchResponse.getHits().getTotalHits();
 			for (SearchHit hits : hit) {
 				String sourceAsMap = hits.getSourceAsString();
 				Gson g = new Gson();
@@ -1382,7 +1385,7 @@ public class TicketDaoImpl implements TicketDao {
 				mapper.add(t);
 			}
 			BulkRequest request = new BulkRequest();
-			for (int i = 0; i < total; i++) {
+			for (int i = 0; i < total.value; i++) {
 				mapper.get(i).setSourceId(1L);
 				Ticket tkt = addTicket(mapper.get(i));
 				if (tkt != null) {
@@ -1391,7 +1394,7 @@ public class TicketDaoImpl implements TicketDao {
 							.source(jsonMap));
 				}
 			}
-			client.bulk(request);
+			client.bulk(request, RequestOptions.DEFAULT);
 			client.close();
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
@@ -1442,7 +1445,7 @@ public class TicketDaoImpl implements TicketDao {
 			SearchSourceBuilder searchSourceBuilder) throws IOException {
 		SearchRequest searchRequest = new SearchRequest(elasticsearchIndex).types(elasticsearchType)
 				.source(searchSourceBuilder);
-		SearchResponse searchResponse = client.search(searchRequest);
+		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 		client.close();
 		return searchResponse;
 	}
@@ -1450,7 +1453,7 @@ public class TicketDaoImpl implements TicketDao {
 	private SearchResponse searchFromAuroraSdkData(RestHighLevelClient client, SearchSourceBuilder searchSourceBuilder)
 			throws IOException {
 		SearchRequest searchRequest = new SearchRequest(FEEDBACK_D1).types(EVENT).source(searchSourceBuilder);
-		SearchResponse searchResponse = client.search(searchRequest);
+		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 		client.close();
 		return searchResponse;
 	}
@@ -1505,7 +1508,7 @@ public class TicketDaoImpl implements TicketDao {
 				newticket.setId(ticket.getId());
 				newticket.setPinnedTicket(ticket.getPinnedTicket());
 				newticket.setOperation(UPDATE);
-				newticket.setUpdatedTime(DateUtil.getFormattedDateInUTC(new Date()));
+				newticket.setUpdatedTime(new Timestamp(new Date().getTime()));
 				newticket.setUpdatedTimeTS(new Date().getTime());
 				ticketsRequestInterceptor.addData(newticket);
 			}

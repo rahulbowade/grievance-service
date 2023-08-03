@@ -8,6 +8,7 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
@@ -85,7 +86,7 @@ public class ElasticSearchRepository {
 		}
 		multiRequest.add(searchRequest);
 		try {
-			response = client.multiSearch(multiRequest);
+			response = client.multiSearch(multiRequest, RequestOptions.DEFAULT);
 		} catch (IOException e) {
 			LOGGER.error(String.format(marker.toString(), " Encountered an error while connecting : %s", e));
 			LOGGER.error(String.format(marker.toString(), " Error Message to report : %s", e.getMessage()));

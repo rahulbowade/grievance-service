@@ -22,6 +22,7 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -181,12 +182,12 @@ public class TicketsRequestInterceptor {
 	public void setValuesOnUpdate(Ticket value, Map<String, Object> jsonMap) throws ParseException {
 		setValuesOnUpdate3(value, jsonMap);
 		if (value.getUpdatedTime() != null) {
-			jsonMap.put(Constants.U_T, value.getUpdatedTime().split(" ")[1]);
+			jsonMap.put(Constants.U_T, value.getUpdatedTime());
 		}
 		if (value.getCreatedTimeTS() != null) {
 			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTimeTS());
 		} else if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.CREATED_TIME_TS, timestampconvertor(value.getCreatedTime()));
+			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime());
 		}
 		if (value.getUpdatedTimeTS() != null) {
 			jsonMap.put(Constants.UPDATED_TIME_TS, value.getUpdatedTimeTS());
@@ -219,13 +220,13 @@ public class TicketsRequestInterceptor {
 			jsonMap.put(Constants.MAX_RATING, value.getMaxRating());
 		}
 		if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime().split(" ")[0]);
+			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime());
 		}
 		if (value.getUpdatedTime() != null) {
-			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime().split(" ")[0]);
+			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime());
 		}
 		if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.C_T, value.getCreatedTime().split(" ")[1]);
+			jsonMap.put(Constants.C_T, value.getCreatedTime());
 		}
 	}
 
@@ -361,19 +362,19 @@ public class TicketsRequestInterceptor {
 
 	public void setValuesOnCreate2(Ticket value, Map<String, Object> jsonMap) throws ParseException {
 		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.C_T, value.getCreatedTime().split(" ")[1]);
+			jsonMap.put(Constants.C_T, value.getCreatedTime());
 		} else {
 			jsonMap.put(Constants.C_T, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getUpdatedTime()))) {
-			jsonMap.put(Constants.U_T, value.getUpdatedTime().split(" ")[1]);
+			jsonMap.put(Constants.U_T, value.getUpdatedTime());
 		} else {
 			jsonMap.put(Constants.U_T, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTimeTS()))) {
 			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTimeTS());
 		} else if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.CREATED_TIME_TS, timestampconvertor(value.getCreatedTime()));
+			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime());
 		} else {
 			jsonMap.put(Constants.CREATED_TIME_TS, null);
 		}
@@ -421,12 +422,12 @@ public class TicketsRequestInterceptor {
 			jsonMap.put(Constants.MAX_RATING, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime().split(" ")[0]);
+			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime());
 		} else {
 			jsonMap.put(Constants.CREATED_TIME, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getUpdatedTime()))) {
-			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime().split(" ")[0]);
+			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime());
 		} else {
 			jsonMap.put(Constants.UPDATED_TIME, null);
 		}
@@ -436,7 +437,7 @@ public class TicketsRequestInterceptor {
 		RestHighLevelClient rc = new RestHighLevelClient(RestClient.builder(new HttpHost(elasticsearchUrl)));
 		try {
 			DeleteRequest request = new DeleteRequest(elasticsearchIndex, "doc", String.valueOf(data.getId()));
-			rc.delete(request);
+			rc.delete(request, RequestOptions.DEFAULT);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		} finally {
@@ -473,7 +474,7 @@ public class TicketsRequestInterceptor {
 		RestHighLevelClient rc = connectToElasticSearch();
 		try {
 			IndexRequest indexRequest = new IndexRequest(elasticsearchIndex, elasticsearchType, id).source(jsonMap);
-			IndexResponse response = rc.index(indexRequest);
+			IndexResponse response = rc.index(indexRequest, RequestOptions.DEFAULT);
 			if (!StringUtils.isBlank(response.toString())) {
 				LOGGER.info("Response : {}", response);
 			}
@@ -488,7 +489,7 @@ public class TicketsRequestInterceptor {
 		RestHighLevelClient rc = connectToElasticSearch();
 		try {
 			UpdateRequest updateRequest = new UpdateRequest(elasticsearchIndex, elasticsearchType, id).doc(jsonMap);
-			rc.update(updateRequest);
+			rc.update(updateRequest, RequestOptions.DEFAULT);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		} finally {
