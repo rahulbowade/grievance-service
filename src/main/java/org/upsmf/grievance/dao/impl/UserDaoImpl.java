@@ -609,7 +609,7 @@ public class UserDaoImpl implements UserDao {
 		if (isPasswordMatch(changePasswordDto.getUserId(), changePasswordDto.getOldPass())) {
 			int count = jdbcTemplate.update(Sql.Common.UPDATE_PSWRD,
 					new Object[] { OneWayHashing.encryptVal(changePasswordDto.getNewPass()),
-							 changePasswordDto.getUserId(),
+							 DateUtil.getFormattedDateInUTC(new Date()), changePasswordDto.getUserId(),
 							OneWayHashing.encryptVal(changePasswordDto.getOldPass()) });
 			if (count > 0) {
 				resposne = true;
@@ -654,7 +654,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			String encryptVal = OneWayHashing.encryptVal(password);
 			count = jdbcTemplate.update(Sql.Common.SAVE_FORGOT_PSWRD,
-					new Object[] { encryptVal, userId });
+					new Object[] { encryptVal, DateUtil.getFormattedDateInUTC(new Date()), userId });
 			LOGGER.info("Password : {}", encryptVal);
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
