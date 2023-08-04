@@ -207,7 +207,7 @@
 			<artifactId>redmine-java-api</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-		<dependency>
+	<!--	<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>7.3.0</version>
@@ -216,6 +216,10 @@
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>elasticsearch-rest-high-level-client</artifactId>
 			<version>7.3.0</version>
+		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.scala-lang</groupId>

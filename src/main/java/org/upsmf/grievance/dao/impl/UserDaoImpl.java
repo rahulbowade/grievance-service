@@ -847,50 +847,12 @@ public class UserDaoImpl implements UserDao {
 		}
 	}
 
+	/**
+	 * not used
+	 */
 	private void integrateReviews(AccessResponse accessResponse, RestTemplate restTemplate, Rev reviews, String appName)
 			throws ParseException, IOException {
-		try {
-			final String uri = Constants.HTTPS_WWW_GOOGLEAPIS_COM_ANDROIDPUBLISHER_V3_APPLICATIONS + appName
-					+ Constants.REVIEWS2;
-			HttpHeaders header = new HttpHeaders();
-			header.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			header.set(Constants.HEADER_STRING, Constants.TOKEN_PREFIX + accessResponse.getAccessToken());
-			HttpEntity<String> entity = new HttpEntity<>(Constants.PARAMETERS, header);
-			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-			if (!StringUtils.isBlank(result.getBody())) {
-				Gson g = new Gson();
-				reviews = g.fromJson(result.getBody(), Rev.class);
-			}
-			if (!reviews.getReviews().isEmpty()) {
-				Ticket t;
-				List<Ticket> mapper = new ArrayList<>();
-				RestHighLevelClient client = connectToElasticSearch();
-				for (int k = 0; k < reviews.getReviews().size(); k++) {
-					List<Object> chainrSpecJSON = JsonUtils.classpathToList(Constants.REVIEWSPEC_JSON);
-					Chainr chainr = Chainr.fromSpec(chainrSpecJSON);
-					Gson gson = new Gson();
-					String inputJSON = gson.toJson(reviews.getReviews().get(k));
-					Object transformedOutput = chainr.transform(JsonUtils.jsonToObject(inputJSON));
-					Gson g = new Gson();
-					t = g.fromJson(JsonUtils.toJsonString(transformedOutput), Ticket.class);
-					t.setAppName(appName);
-					mapper.add(t);
-				}
-				BulkRequest req = new BulkRequest();
-				for (int l = 0; l < mapper.size(); l++) {
-					Ticket tkt = ticketDao.addTicket(mapper.get(l));
-					if (tkt != null) {
-						Map<String, Object> jsonMap = ticketsRequestInterceptor.createJsonMap(tkt);
-						req.add(new IndexRequest(elasticsearchIndex, elasticsearchType, tkt.getId().toString())
-								.source(jsonMap));
-					}
-				}
-				client.bulk(req, RequestOptions.DEFAULT);
-				client.close();
-			}
-		} catch (RestClientException e) {
-			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
-		}
+		//return null;
 	}
 
 	private RestHighLevelClient connectToElasticSearch() {

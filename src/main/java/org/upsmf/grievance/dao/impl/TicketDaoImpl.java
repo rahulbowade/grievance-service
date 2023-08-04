@@ -1274,7 +1274,7 @@ public class TicketDaoImpl implements TicketDao {
 			keyValue.put(JsonKey.NEWSTATUS, newStatus);
 			String[] emails = email.split(",");
 			SendMail.sendMail(keyValue, emails, Constants.STATUS_CHANGE, "ticket-status-update-aurora.vm");
-			ticketsRequestInterceptor.addData(newticket);
+			ticketsRequestInterceptor.updateTicket(newticket);
 		} catch (Exception e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_WHILE_UPDATING_TICKET_S, e.getMessage()));
 			return false;
@@ -1388,11 +1388,6 @@ public class TicketDaoImpl implements TicketDao {
 			for (int i = 0; i < total.value; i++) {
 				mapper.get(i).setSourceId(1L);
 				Ticket tkt = addTicket(mapper.get(i));
-				if (tkt != null) {
-					Map<String, Object> jsonMap = ticketsRequestInterceptor.createJsonMap(tkt);
-					request.add(new IndexRequest(elasticsearchIndex, elasticsearchType, tkt.getId().toString())
-							.source(jsonMap));
-				}
 			}
 			client.bulk(request, RequestOptions.DEFAULT);
 			client.close();
