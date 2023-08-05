@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -63,6 +64,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -98,6 +100,7 @@ import org.upsmf.grievance.model.mapper.SqlDataMapper;
 import org.upsmf.grievance.model.mapper.SqlDataMapper.HelpdeskRowRecordMapper;
 import org.upsmf.grievance.model.mapper.SqlDataMapper.TicketWorkFlowMapperV2;
 import org.upsmf.grievance.service.HelpdeskService;
+import org.upsmf.grievance.service.OtpService;
 import org.upsmf.grievance.service.UserService;
 import org.upsmf.grievance.util.Constants;
 import org.upsmf.grievance.util.DateUtil;
@@ -173,6 +176,9 @@ public class TicketDaoImpl implements TicketDao {
 
 	@Autowired
 	private TicketsRequestInterceptor ticketsRequestInterceptor;
+
+	@Autowired
+	private OtpService otpService;
 
 	public TicketDaoImpl(@Value("${image.source.attachment.aws}") Boolean attachmentSource, JdbcTemplate jdbcTemplate,
 			HelpdeskDao helpdeskDao, HelpdeskService helpdeskService, SuperAdminDao superAdminDao) {
@@ -287,7 +293,129 @@ public class TicketDaoImpl implements TicketDao {
 			ticket.setOperation("save");
 			ticket.setStatus(value);
 			if (ticket.getSourceId().equals(3L)) {
-				sendTicketEmail(ticket,ticket.getRequesterEmail());
+				sendTicketEmailVal(ticket,ticket.getRequesterEmail());
+				ticketsRequestInterceptor.addData(ticket);
+			}
+			if (!value1) {
+				return null;
+			}
+		} catch (Exception e) {
+			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
+			return null;
+		}
+		addTicketActivityLog(ticket.getId(), "New ticket has been created", ticket.getRequestedBy());
+		return ticket;
+	}
+
+	@Override
+	public Ticket addTicketwithOtp(Ticket ticket, String Otp){
+		if (ProjectUtil.isObjectNull(intializeAddTicket(ticket))) {
+			return null;
+		}
+		KeyHolder keyHolder = KeyFactory.getkeyHolder();
+		try {
+			if (ProjectUtil.isObjectNull(getApps(ticket))) {
+				return null;
+			}
+			if(!otpService.validateOtp(ticket.getRequesterEmail(),Otp)){
+				return null;
+			}
+
+			Long orgId = jdbcTemplate.queryForObject(Apps.GET_ORG_ID_FROM_APP_ID, new Object[] { ticket.getAppId() },
+					Long.class);
+			ticket.setOrgId(orgId);
+			if (ticket.getHelpdeskId() == null) {
+				Long helpdeskId = jdbcTemplate.queryForObject(Apps.GET_HELPDESK_ID_FROM_APP_ID,
+						new Object[] { ticket.getAppId() }, Long.class);
+				ticket.setHelpdeskId(helpdeskId);
+			}
+			if (sourceId(ticket)) {
+				ticket.setSourceId(3L);
+			}
+			if (ticket.getHelpdeskId() != null) {
+				Helpdesk helpdesk = jdbcTemplate.query(Sql.UserQueries.GET_HELPDESK_CHANNELS,
+						new Object[] { ticket.getHelpdeskId() }, MasterDataManager.rowMapHelpdesk).get(0);
+				boolean val = val(ticket, helpdesk);
+				if (val) {
+					return null;
+				}
+			}
+			if (ticket.getRequestedBy() == null) {
+				setUsername(ticket);
+			}
+			jdbcTemplate.update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					String[] returnValColumn = new String[] { "id" };
+					PreparedStatement statement = connection.prepareStatement(Sql.Ticket.ADD_TICKET, returnValColumn);
+					ticket.setCreatedTime(new Timestamp(new Date().getTime()));
+					ticket.setUpdatedTime(new Timestamp(new Date().getTime()));
+					ticket.setCreatedTimeTS(new Date().getTime());
+					ticket.setUpdatedTimeTS(new Date().getTime());
+					statement.setTimestamp(1, ticket.getCreatedTime());
+					if (!StringUtils.isBlank(String.valueOf(ticket.getRate()))) {
+						statement.setLong(2, ticket.getRate());
+					} else {
+						statement.setLong(2, 0L);
+					}
+					if (!StringUtils.isBlank(String.valueOf(ticket.getMaxRating()))) {
+						statement.setLong(3, ticket.getMaxRating());
+					} else {
+						statement.setLong(3, 0L);
+					}
+					if (!StringUtils.isBlank(ticket.getPriority())) {
+						statement.setString(4, ticket.getPriority());
+					} else {
+						statement.setString(4, "p3");
+					}
+					if (ticket.getRequestedBy() != null) {
+						statement.setLong(5, ticket.getRequestedBy());
+					}
+					if (ticket.getDescription() != null) {
+						statement.setString(6, ticket.getDescription());
+					} else if (ticket.getFeedback() != null) {
+						ticket.setDescription(ticket.getFeedback());
+						statement.setString(6, ticket.getFeedback());
+					} else {
+						statement.setString(6, "");
+					}
+					if (ticket.getType() != null) {
+						statement.setLong(7, ticket.getType());
+					} else {
+						Long id = jdbcTemplate.queryForObject(Sql.Ticket.GET_DEFAULT_TICKET_TYPE,
+								new Object[] { ticket.getHelpdeskId() }, Long.class);
+						ticket.setType(id);
+						if (id > 0) {
+							statement.setLong(7, id);
+						}
+					}
+					statement.setTimestamp(8, ticket.getUpdatedTime());
+					statement.setBoolean(9, false);
+					return statement;
+				}
+			}, keyHolder);
+			ticket.setId(keyHolder.getKey().longValue());
+			if (ticket.getReviewId() != null) {
+				jdbcTemplate.update(Sql.Ticket.UPDATE_TICKET_REVIEW_ID,
+						new Object[] { ticket.getReviewId(), ticket.getId() });
+				boolean v = value(ticket);
+				if (v) {
+					jdbcTemplate.update(Sql.Ticket.ADD_UPDATES,
+							new Object[] { ticket.getDeveloperComment(), ticket.getRequestedBy(), ticket.getId(),
+									convertFromTimestampToUTC(ticket.getDeveloperTimestamp()) });
+				}
+			}
+			ticket.setSourceId(ticket.getSourceId());
+			mapTicketToHelpdesk(ticket);
+			addCc(ticket);
+			TicketTypeDto ticketTypeDto = new TicketTypeDto(ticket);
+			String value = addDefaultWorkflowForTicketType(ticketTypeDto);
+			Boolean value1 = addChecklistForTicketType(ticketTypeDto);
+			ticket.setActive(true);
+			ticket.setOperation("save");
+			ticket.setStatus(value);
+			if (ticket.getSourceId().equals(3L)) {
+				sendTicketEmailVal(ticket,ticket.getRequesterEmail());
 				ticketsRequestInterceptor.addData(ticket);
 			}
 			if (!value1) {
@@ -411,7 +539,7 @@ public class TicketDaoImpl implements TicketDao {
 		return RandomStringUtils.random(length, randomText);
 	}
 
-	/*private void sendTicketEmail(Ticket ticket) {
+	private void sendTicketEmail(Ticket ticket) {
 		try {
 			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
 			user.setOrgId(MasterDataManager.getUserOrgMap().get(ticket.getRequestedBy()));
@@ -427,10 +555,10 @@ public class TicketDaoImpl implements TicketDao {
 		} catch (ResourceNotFoundException e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
 		}
-	}*/
+	}
 
 
-	private void sendTicketEmail(Ticket ticket, String recipientEmail) {
+	private void sendTicketEmailVal(Ticket ticket, String recipientEmail) {
 		try {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());

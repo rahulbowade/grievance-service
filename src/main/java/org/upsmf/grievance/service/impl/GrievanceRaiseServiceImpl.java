@@ -48,7 +48,7 @@ public class GrievanceRaiseServiceImpl implements GrievanceRaiseService {
         ticket.setRequesterEmail(grievance.getEmailId());
         ticket.setRequesterPhoneNumber(grievance.getPhone());
          LOGGER.info("added all values to ticket" + ticket);
-        ticket=ticketService.addTicket(ticket);
+        ticket=ticketService.addTicketWithOtp(ticket,grievance.getOtp());
 
         // checking response
         GrievanceTicket grievanceTicket = null;

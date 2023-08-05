@@ -79,4 +79,6 @@ public interface TicketService {
 	TicketCount getNoOfTickets(Long userId);
 
 	boolean pinTicket(Ticket ticket);
+
+	Ticket addTicketWithOtp(Ticket ticket, String otp);
 }

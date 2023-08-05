@@ -29,5 +29,7 @@ public class GrievanceRaise {
 
     private List<String> filePath;
 
+    private String otp;
+
 
 }
