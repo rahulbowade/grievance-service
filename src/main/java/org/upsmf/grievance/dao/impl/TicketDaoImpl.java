@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -286,7 +287,7 @@ public class TicketDaoImpl implements TicketDao {
 			ticket.setOperation("save");
 			ticket.setStatus(value);
 			if (ticket.getSourceId().equals(3L)) {
-				sendTicketEmail(ticket);
+				sendTicketEmail(ticket,ticket.getRequesterEmail());
 				ticketsRequestInterceptor.addData(ticket);
 			}
 			if (!value1) {
@@ -410,7 +411,7 @@ public class TicketDaoImpl implements TicketDao {
 		return RandomStringUtils.random(length, randomText);
 	}
 
-	private void sendTicketEmail(Ticket ticket) {
+	/*private void sendTicketEmail(Ticket ticket) {
 		try {
 			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
 			user.setOrgId(MasterDataManager.getUserOrgMap().get(ticket.getRequestedBy()));
@@ -422,6 +423,23 @@ public class TicketDaoImpl implements TicketDao {
 			keyValue.put(JsonKey.HELPDESKNAME,
 					MasterDataManager.getHelpdeskIdHelpdeskObjectMapping().get(ticket.getHelpdeskId()).getName());
 			String[] emails = email.split(",");
+			SendMail.sendMail(keyValue, emails, Constants.TICKETCREATION, "new-ticket-createdby-aurora.vm");
+		} catch (ResourceNotFoundException e) {
+			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
+		}
+	}*/
+
+
+	private void sendTicketEmail(Ticket ticket, String recipientEmail) {
+		try {
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
+			user.setOrgId(MasterDataManager.getUserOrgMap().get(ticket.getRequestedBy()));
+			Map<String, String> keyValue = new HashMap<>();
+			keyValue.put(JsonKey.FIRST_NAME, user.getName());
+			keyValue.put(JsonKey.ID, ticket.getId().toString());
+			keyValue.put(JsonKey.DATE, ticket.getCreatedTime().toLocalDateTime().format(dateTimeFormatter));
+			String[] emails = recipientEmail.split(",");
 			SendMail.sendMail(keyValue, emails, Constants.TICKETCREATION, "new-ticket-createdby-aurora.vm");
 		} catch (ResourceNotFoundException e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));

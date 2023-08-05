@@ -29,12 +29,5 @@ public class GrievanceRaise {
 
     private List<String> filePath;
 
-    private String appKey;
-
-    private Long appId;
-
-    private  String appName;
-
-
 
 }
