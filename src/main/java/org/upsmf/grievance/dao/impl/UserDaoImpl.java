@@ -94,10 +94,6 @@ public class UserDaoImpl implements UserDao {
 
 	private static final String ENCOUNTERED_AN_EXCEPTION_S = "Encountered an Exception :  %s";
 
-	private static final String EL_STIC123 = "El@stic123";
-
-	private static final String ELASTIC = "elastic";
-
 	public static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
 	@Value("${elk.data.up}")
@@ -895,7 +891,7 @@ public class UserDaoImpl implements UserDao {
 
 	private RestHighLevelClient connectToElasticSearch() {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(ELASTIC, EL_STIC123));
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(Constants.ELASTIC, Constants.EL_STIC123));
 
 		HttpClientConfigCallback httpClientConfigCallback = new RestClientBuilder.HttpClientConfigCallback() {
 			@Override
