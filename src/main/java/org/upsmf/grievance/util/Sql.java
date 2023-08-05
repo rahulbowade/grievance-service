@@ -82,7 +82,7 @@ public final class Sql {
 		public static final String OPEN_BRACE = "(";
 		public static final String CLOSE_BRACE = ")";
 		public static final String ADD_NEW_ORG = "INSERT INTO organization (org_name, url, logo, created_by, updated_by, description, color, domain) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-		public static final String NEW_GRIEVANCE_ADMIN_USER = "INSERT INTO user (name, username, phone, img_path) VALUES (?,?,?,?)";
+		public static final String NEW_GRIEVANCE_ADMIN_USER = "INSERT INTO \"user\" (name, username, phone, img_path) VALUES (?,?,?,?)";
 		public static final String DELETE_ORG = "UPDATE organization SET is_active = FALSE , updated_by = ? , updated_date = ? WHERE id = ?";
 		public static final String GET_ADMIN_BY_ORG = "SELECT DISTINCT a.id,a.name,a.username,a.phone FROM \"user\" a,organization b,roles c, user_org d, user_role e "
 				+ "WHERE a.id = d.user_id AND a.id = e.user_id " + "AND c.id = ? AND b.id = ? AND a.is_active IS TRUE";
@@ -256,7 +256,7 @@ public final class Sql {
 		public static final String AND_CONDITION = " AND ";
 		public static final String OR_CONDITION = " OR ";
 
-		public static final String UPDATE_USER = "UPDATE user SET name = ?,username = ?, phone = ?, is_active = ?, img_path = ? where id = ? ";
+		public static final String UPDATE_USER = "UPDATE \"user\" SET name = ?,username = ?, phone = ?, is_active = ?, img_path = ? where \"user\".id = ? ";
 		public static final String GET_USER_COUNT = "SELECT count(*) FROM \"user\" usr";
 		public static final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM \"user\" usr where usr.is_active = ? ";
 		public static final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM \"user\" usr LEFT JOIN user_role ur ON usr.id = ur.user_id where ur.role_id = ? and usr.is_active IS TRUE";
