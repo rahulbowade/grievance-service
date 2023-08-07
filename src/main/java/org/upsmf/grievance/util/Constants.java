@@ -333,6 +333,8 @@ public class Constants {
 	public static final String RATE = "rate";
 	public static final String DESCRIPTION = "description";
 
+	public static final String RANDOM="abcdefghijklmnopqrstuvwxyz123456789";
+
 	private static final String[] INCLUDE_FIELDS = new String[] { ID, STATUS, TOTAL, DESCRIPTION, PINNED_TICKET,
 			REQUESTED_BY, HELPDESK_ID, UPDATED_TIME, CREATED_TIME, U_T, C_T };
 	private static final String[] EXCLUDE_FIELDS = new String[] { OS_VERSION, OS_TYPE, DEVICE_TYPE, DEVICE_LOCALE,

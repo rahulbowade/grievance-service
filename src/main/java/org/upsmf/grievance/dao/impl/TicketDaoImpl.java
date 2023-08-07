@@ -426,7 +426,7 @@ public class TicketDaoImpl implements TicketDao {
 	}
 
 	public String genText() {
-		String randomText = "abcdefghijklmnopqrstuvwxyz123456789";
+		String randomText = Constants.RANDOM;
 		int length = 5;
 		return RandomStringUtils.random(length, randomText);
 	}
@@ -452,7 +452,7 @@ public class TicketDaoImpl implements TicketDao {
 
 	private void sendTicketEmailVal(Ticket ticket, String recipientEmail) {
 		try {
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtil.DEFAULT_DATE_FORMAT);
 			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
 			user.setOrgId(MasterDataManager.getUserOrgMap().get(ticket.getRequestedBy()));
 			Map<String, String> keyValue = new HashMap<>();
