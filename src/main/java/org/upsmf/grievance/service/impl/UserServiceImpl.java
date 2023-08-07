@@ -417,6 +417,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		userDao.getAuthDomain(userDto);
 		if (authenticate(userDto)) {
 			LoginDto loginData = userDao.login(userDto);
+			loginData.setOrgId(userDto.getOrgId());
 			if (!StringUtils.isBlank(userObject.getImagePath()) && userObject.getImagePath().contains(USERPROFILE)) {
 				S3Config s3values = superAdminDao.getS3Access();
 				String url = S3FileManager.getPreSignedURL(s3values, userObject.getImagePath());
