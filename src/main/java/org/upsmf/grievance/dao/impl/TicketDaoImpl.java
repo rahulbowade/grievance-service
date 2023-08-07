@@ -312,121 +312,13 @@ public class TicketDaoImpl implements TicketDao {
 		if (ProjectUtil.isObjectNull(intializeAddTicket(ticket))) {
 			return null;
 		}
-		KeyHolder keyHolder = KeyFactory.getkeyHolder();
-		try {
-			if (ProjectUtil.isObjectNull(getApps(ticket))) {
-				return null;
-			}
-			if(!otpService.validateOtp(ticket.getRequesterEmail(),Otp)){
-				return null;
-			}
-
-			Long orgId = jdbcTemplate.queryForObject(Apps.GET_ORG_ID_FROM_APP_ID, new Object[] { ticket.getAppId() },
-					Long.class);
-			ticket.setOrgId(orgId);
-			if (ticket.getHelpdeskId() == null) {
-				Long helpdeskId = jdbcTemplate.queryForObject(Apps.GET_HELPDESK_ID_FROM_APP_ID,
-						new Object[] { ticket.getAppId() }, Long.class);
-				ticket.setHelpdeskId(helpdeskId);
-			}
-			if (sourceId(ticket)) {
-				ticket.setSourceId(3L);
-			}
-			if (ticket.getHelpdeskId() != null) {
-				Helpdesk helpdesk = jdbcTemplate.query(Sql.UserQueries.GET_HELPDESK_CHANNELS,
-						new Object[] { ticket.getHelpdeskId() }, MasterDataManager.rowMapHelpdesk).get(0);
-				boolean val = val(ticket, helpdesk);
-				if (val) {
-					return null;
-				}
-			}
-			if (ticket.getRequestedBy() == null) {
-				setUsername(ticket);
-			}
-			jdbcTemplate.update(new PreparedStatementCreator() {
-				@Override
-				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-					String[] returnValColumn = new String[] { "id" };
-					PreparedStatement statement = connection.prepareStatement(Sql.Ticket.ADD_TICKET, returnValColumn);
-					ticket.setCreatedTime(new Timestamp(new Date().getTime()));
-					ticket.setUpdatedTime(new Timestamp(new Date().getTime()));
-					ticket.setCreatedTimeTS(new Date().getTime());
-					ticket.setUpdatedTimeTS(new Date().getTime());
-					statement.setTimestamp(1, ticket.getCreatedTime());
-					if (!StringUtils.isBlank(String.valueOf(ticket.getRate()))) {
-						statement.setLong(2, ticket.getRate());
-					} else {
-						statement.setLong(2, 0L);
-					}
-					if (!StringUtils.isBlank(String.valueOf(ticket.getMaxRating()))) {
-						statement.setLong(3, ticket.getMaxRating());
-					} else {
-						statement.setLong(3, 0L);
-					}
-					if (!StringUtils.isBlank(ticket.getPriority())) {
-						statement.setString(4, ticket.getPriority());
-					} else {
-						statement.setString(4, "p3");
-					}
-					if (ticket.getRequestedBy() != null) {
-						statement.setLong(5, ticket.getRequestedBy());
-					}
-					if (ticket.getDescription() != null) {
-						statement.setString(6, ticket.getDescription());
-					} else if (ticket.getFeedback() != null) {
-						ticket.setDescription(ticket.getFeedback());
-						statement.setString(6, ticket.getFeedback());
-					} else {
-						statement.setString(6, "");
-					}
-					if (ticket.getType() != null) {
-						statement.setLong(7, ticket.getType());
-					} else {
-						Long id = jdbcTemplate.queryForObject(Sql.Ticket.GET_DEFAULT_TICKET_TYPE,
-								new Object[] { ticket.getHelpdeskId() }, Long.class);
-						ticket.setType(id);
-						if (id > 0) {
-							statement.setLong(7, id);
-						}
-					}
-					statement.setTimestamp(8, ticket.getUpdatedTime());
-					statement.setBoolean(9, false);
-					return statement;
-				}
-			}, keyHolder);
-			ticket.setId(keyHolder.getKey().longValue());
-			if (ticket.getReviewId() != null) {
-				jdbcTemplate.update(Sql.Ticket.UPDATE_TICKET_REVIEW_ID,
-						new Object[] { ticket.getReviewId(), ticket.getId() });
-				boolean v = value(ticket);
-				if (v) {
-					jdbcTemplate.update(Sql.Ticket.ADD_UPDATES,
-							new Object[] { ticket.getDeveloperComment(), ticket.getRequestedBy(), ticket.getId(),
-									convertFromTimestampToUTC(ticket.getDeveloperTimestamp()) });
-				}
-			}
-			ticket.setSourceId(ticket.getSourceId());
-			mapTicketToHelpdesk(ticket);
-			addCc(ticket);
-			TicketTypeDto ticketTypeDto = new TicketTypeDto(ticket);
-			String value = addDefaultWorkflowForTicketType(ticketTypeDto);
-			Boolean value1 = addChecklistForTicketType(ticketTypeDto);
-			ticket.setActive(true);
-			ticket.setOperation("save");
-			ticket.setStatus(value);
-			if (ticket.getSourceId().equals(3L)) {
-				sendTicketEmailVal(ticket,ticket.getRequesterEmail());
-				ticketsRequestInterceptor.addData(ticket);
-			}
-			if (!value1) {
-				return null;
-			}
-		} catch (Exception e) {
-			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
+		if (ProjectUtil.isObjectNull(getApps(ticket))) {
 			return null;
 		}
-		addTicketActivityLog(ticket.getId(), "New ticket has been created", ticket.getRequestedBy());
-		return ticket;
+		if(!otpService.validateOtp(ticket.getRequesterEmail(),Otp)){
+			return null;
+		}
+		return addTicket(ticket);
 	}
 
 	public void setUsername(Ticket ticket) {

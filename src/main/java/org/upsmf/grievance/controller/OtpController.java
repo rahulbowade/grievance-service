@@ -1,6 +1,7 @@
 package org.upsmf.grievance.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.upsmf.grievance.model.OtpRequest;
@@ -17,8 +18,14 @@ public class OtpController {
     private OtpService otpService;
 
     @PostMapping("/generate-otp")
-    public void generateOtp(@RequestBody OtpRequest otpRequest) {
-        otpService.generateAndSendOtp(otpRequest);
+    public ResponseEntity<String> generateOtp(@RequestBody OtpRequest otpRequest) {
+        try {
+            otpService.generateAndSendOtp(otpRequest);
+            return ResponseEntity.ok("OTP generated and sent successfully to " + otpRequest.getEmail());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to generate and send OTP: " + e.getMessage());
+        }
     }
 
     @PostMapping("/validate-otp")

@@ -38,10 +38,14 @@ public class OtpServiceImpl implements OtpService{
     public String generateAndSendOtp(OtpRequest otpRequest) {
         String email = otpRequest.getEmail();
         String otp = generateOtp();
+        String mobileOtp= generateOtp();
         RedisTicketData redisTicketData = new RedisTicketData();
         redisTicketData.setEmail(email);
-        redisTicketData.setPhonenumber(otpRequest.getPhoneNumber());
-        redisTicketData.setOtp(otp);
+        redisTicketData.setPhoneNumber(otpRequest.getPhoneNumber());
+        redisTicketData.setEmailOtp(otp);
+        redisTicketData.setMobileOtp(mobileOtp);
+
+
 
         String redisKey = "otp:" + email;
         redisTemplate.opsForValue().set(redisKey, toJson(redisTicketData), otpExpirationMinutes, TimeUnit.MINUTES);
@@ -56,7 +60,7 @@ public class OtpServiceImpl implements OtpService{
         String redisData = redisTemplate.opsForValue().get(redisKey);
         if (redisData != null) {
             RedisTicketData ticketData = fromJson(redisData, RedisTicketData.class);
-            if (ticketData.getOtp().equals(enteredOtp)) {
+            if (ticketData.getEmailOtp().equals(enteredOtp)) {
                 // Remove the data from Redis after successful validation
                 redisTemplate.delete(redisKey);
                 return true;

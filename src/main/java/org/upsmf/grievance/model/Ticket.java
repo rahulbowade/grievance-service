@@ -85,4 +85,21 @@ public class Ticket {
 	private String requesterPhoneNumber;
 	private String requesterUser;
 
+	private Boolean junk;
+
+	private Long lastUpdatedBy;
+
+	private Boolean escalated;
+
+	private Timestamp escalatedDate;
+
+	private Long escalatedTo;
+
+	private String requestedType;
+
+	private List<String> comment;
+
+	private List<String> requestedAttachmentUrl;
+
+	private String escalatedBy;
 }
