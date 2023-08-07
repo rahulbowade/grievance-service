@@ -81,4 +81,6 @@ public interface TicketDao {
 
 	boolean sendRepliesToReviews(Updates updates);
 
+	Ticket addTicketwithOtp(Ticket ticket,String Otp);
+
 }

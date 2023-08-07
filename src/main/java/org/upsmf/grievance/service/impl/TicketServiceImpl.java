@@ -235,6 +235,11 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
+	public Ticket addTicketWithOtp(Ticket ticket, String otp) {
+		return ticketDao.addTicketwithOtp(ticket,otp);
+	}
+
+	@Override
 	public TicketCount getNoOfTickets(Long userId) {
 		return ticketDao.getNoOfTickets(userId);
 	}

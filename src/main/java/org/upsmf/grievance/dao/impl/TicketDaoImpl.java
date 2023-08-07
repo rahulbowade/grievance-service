@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -52,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -62,6 +64,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,6 +100,7 @@ import org.upsmf.grievance.model.mapper.SqlDataMapper;
 import org.upsmf.grievance.model.mapper.SqlDataMapper.HelpdeskRowRecordMapper;
 import org.upsmf.grievance.model.mapper.SqlDataMapper.TicketWorkFlowMapperV2;
 import org.upsmf.grievance.service.HelpdeskService;
+import org.upsmf.grievance.service.OtpService;
 import org.upsmf.grievance.service.UserService;
 import org.upsmf.grievance.util.Constants;
 import org.upsmf.grievance.util.DateUtil;
@@ -168,6 +172,9 @@ public class TicketDaoImpl implements TicketDao {
 
 	@Autowired
 	private TicketsRequestInterceptor ticketsRequestInterceptor;
+
+	@Autowired
+	private OtpService otpService;
 
 	public TicketDaoImpl(@Value("${image.source.attachment.aws}") Boolean attachmentSource, JdbcTemplate jdbcTemplate,
 			HelpdeskDao helpdeskDao, HelpdeskService helpdeskService, SuperAdminDao superAdminDao) {
@@ -282,7 +289,7 @@ public class TicketDaoImpl implements TicketDao {
 			ticket.setOperation("save");
 			ticket.setStatus(value);
 			if (ticket.getSourceId().equals(3L)) {
-				sendTicketEmail(ticket);
+				sendTicketEmailVal(ticket,ticket.getRequesterEmail());
 				ticketsRequestInterceptor.addData(ticket);
 			}
 			if (!value1) {
@@ -294,6 +301,20 @@ public class TicketDaoImpl implements TicketDao {
 		}
 		addTicketActivityLog(ticket.getId(), "New ticket has been created", ticket.getRequestedBy());
 		return ticket;
+	}
+
+	@Override
+	public Ticket addTicketwithOtp(Ticket ticket, String Otp){
+		if (ProjectUtil.isObjectNull(intializeAddTicket(ticket))) {
+			return null;
+		}
+		if (ProjectUtil.isObjectNull(getApps(ticket))) {
+			return null;
+		}
+		if(!otpService.validateOtp(ticket.getRequesterEmail(),Otp)){
+			return null;
+		}
+		return addTicket(ticket);
 	}
 
 	public void setUsername(Ticket ticket) {
@@ -401,7 +422,7 @@ public class TicketDaoImpl implements TicketDao {
 	}
 
 	public String genText() {
-		String randomText = "abcdefghijklmnopqrstuvwxyz123456789";
+		String randomText = Constants.RANDOM;
 		int length = 5;
 		return RandomStringUtils.random(length, randomText);
 	}
@@ -418,6 +439,23 @@ public class TicketDaoImpl implements TicketDao {
 			keyValue.put(JsonKey.HELPDESKNAME,
 					MasterDataManager.getHelpdeskIdHelpdeskObjectMapping().get(ticket.getHelpdeskId()).getName());
 			String[] emails = email.split(",");
+			SendMail.sendMail(keyValue, emails, Constants.TICKETCREATION, "new-ticket-createdby-aurora.vm");
+		} catch (ResourceNotFoundException e) {
+			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));
+		}
+	}
+
+
+	private void sendTicketEmailVal(Ticket ticket, String recipientEmail) {
+		try {
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtil.DEFAULT_DATE_FORMAT);
+			User user = superAdminDao.userDetailsByUserId(ticket.getRequestedBy());
+			user.setOrgId(MasterDataManager.getUserOrgMap().get(ticket.getRequestedBy()));
+			Map<String, String> keyValue = new HashMap<>();
+			keyValue.put(JsonKey.FIRST_NAME, user.getName());
+			keyValue.put(JsonKey.ID, ticket.getId().toString());
+			keyValue.put(JsonKey.DATE, ticket.getCreatedTime().toLocalDateTime().format(dateTimeFormatter));
+			String[] emails = recipientEmail.split(",");
 			SendMail.sendMail(keyValue, emails, Constants.TICKETCREATION, "new-ticket-createdby-aurora.vm");
 		} catch (ResourceNotFoundException e) {
 			LOGGER.error(String.format(ENCOUNTERED_AN_EXCEPTION_S, e.getMessage()));

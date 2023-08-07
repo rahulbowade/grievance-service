@@ -332,9 +332,8 @@ public class Constants {
 	public static final String MAX_RATING = "max-rating";
 	public static final String RATE = "rate";
 	public static final String DESCRIPTION = "description";
-
+  public static final String RANDOM="abcdefghijklmnopqrstuvwxyz123456789";
 	public static final String EL_STIC123 = "Elastic123";
-
 	public static final String ELASTIC = "elastic";
 
 	private static final String[] INCLUDE_FIELDS = new String[] { ID, STATUS, TOTAL, DESCRIPTION, PINNED_TICKET,

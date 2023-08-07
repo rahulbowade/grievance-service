@@ -294,7 +294,7 @@ public final class Sql {
 		public static final String GET_USER_ID_AND_USER_NAME = "SELECT id,name FROM \"user\" where is_active is true;";
 		public static final String UPDATE_ALLOW_ALL_USERS = "UPDATE helpdesk SET allow_all_users = ? WHERE id = ?";
 		public static final String REMOVE_ALL_TICKET_ATTACHMENT = "DELETE FROM ticket_attachment where ticket_id=?";
-		public static final String GET_HELPDESK_CHANNELS = "SELECT direct, playstore, appstore, aurora_sdk FROM helpdesk where id=? and is_active is true ";
+		public static final String GET_HELPDESK_CHANNELS = "SELECT direct, playstore, appstore, grievance_sdk FROM helpdesk where id=? and is_active is true ";
 
 		public static final String QUERY1 = "SELECT toa.aut_id as id, toa.base_url as name, auth_name as description from organization_auth toa, ";
 		public static final String QUERY2 = " authentication auth WHERE toa.aut_id = auth.id AND  toa.org_id = ";

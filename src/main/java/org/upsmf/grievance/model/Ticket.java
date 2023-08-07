@@ -3,6 +3,7 @@ package org.upsmf.grievance.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+
 import org.upsmf.grievance.dto.TicketWorkflowDto;
 
 import lombok.AllArgsConstructor;
@@ -79,5 +80,25 @@ public class Ticket {
 	private List<String> attachmentUrl;
 	private List<String> selectedTags;
 	private List<Tags> tags;
+	private String requesterEmail;
+	private String requesterPhoneNumber;
+	private String requesterUser;
 
+	private Boolean junk;
+
+	private Long lastUpdatedBy;
+
+	private Boolean escalated;
+
+	private Timestamp escalatedDate;
+
+	private Long escalatedTo;
+
+	private String requestedType;
+
+	private List<String> comment;
+
+	private List<String> requestedAttachmentUrl;
+
+	private String escalatedBy;
 }
