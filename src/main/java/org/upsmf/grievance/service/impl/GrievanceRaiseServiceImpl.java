@@ -17,9 +17,6 @@ public class GrievanceRaiseServiceImpl implements GrievanceRaiseService {
     @Autowired
     private TicketService ticketService;
 
-    @Autowired
-    private  Ticket ticket;
-
     @Value("${source_default_request_id}")
     private Long sourceId;
 
@@ -37,6 +34,7 @@ public class GrievanceRaiseServiceImpl implements GrievanceRaiseService {
     @Override
     public GrievanceTicket addGrievance(GrievanceRaise grievance) {
         LOGGER.info("Enter the addGrievanc method");
+        Ticket ticket=new Ticket();
         ticket.setUserName(grievance.getName());
         ticket.setHelpdeskId(grievance.getHelpdeskId());
         ticket.setSourceId(sourceId);

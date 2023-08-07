@@ -16,8 +16,6 @@ import javax.annotation.security.PermitAll;
 public class GrievanceRaiseController {
     @Autowired
     private GrievanceRaiseService service;
-    @Autowired
-    private Ticket ticket;
 
     @PostMapping(value ="/grievanceRaise")
     public String addGrievance(@RequestBody GrievanceRaise grievance)

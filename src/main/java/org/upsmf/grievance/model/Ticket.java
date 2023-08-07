@@ -3,7 +3,7 @@ package org.upsmf.grievance.model;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+
 import org.upsmf.grievance.dto.TicketWorkflowDto;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +17,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(includeFieldNames = true)
-@Component
 public class Ticket {
 
 	private Long userId;
