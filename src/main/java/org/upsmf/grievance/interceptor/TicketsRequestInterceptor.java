@@ -35,13 +35,11 @@ import org.upsmf.grievance.dao.impl.ApplicationDaoImpl;
 import org.upsmf.grievance.model.Tags;
 import org.upsmf.grievance.model.Ticket;
 import org.upsmf.grievance.util.Constants;
+import org.upsmf.grievance.util.DateUtil;
 import org.upsmf.grievance.util.ProjectUtil;
 
 @Component
 public class TicketsRequestInterceptor {
-
-	private static final String EL_STIC123 = "El@stic123";
-	private static final String ELASTIC = "elastic";
 	private static final String ENCOUNTERED_AN_EXCEPTION_S = "Encountered an Exception : %s";
 	private static final String CLASSNAME = TicketsRequestInterceptor.class.getName();
 	private static BlockingQueue<Ticket> queue = new ArrayBlockingQueue<>(Constants.CAPACITY);
@@ -182,16 +180,11 @@ public class TicketsRequestInterceptor {
 	public void setValuesOnUpdate(Ticket value, Map<String, Object> jsonMap) throws ParseException {
 		setValuesOnUpdate3(value, jsonMap);
 		if (value.getUpdatedTime() != null) {
-			jsonMap.put(Constants.U_T, value.getUpdatedTime());
+			jsonMap.put(Constants.U_T, DateUtil.getFormattedDateInString(value.getUpdatedTime()).split(" ")[1]);
 		}
-		if (value.getCreatedTimeTS() != null) {
-			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTimeTS());
-		} else if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime());
-		}
-		if (value.getUpdatedTimeTS() != null) {
-			jsonMap.put(Constants.UPDATED_TIME_TS, value.getUpdatedTimeTS());
-		}
+			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime().getTime());
+
+			jsonMap.put(Constants.UPDATED_TIME_TS, value.getUpdatedTime().getTime());
 		if (value.getRequestedBy() != null) {
 			jsonMap.put(Constants.REQUESTED_BY, value.getRequestedBy());
 		}
@@ -220,13 +213,13 @@ public class TicketsRequestInterceptor {
 			jsonMap.put(Constants.MAX_RATING, value.getMaxRating());
 		}
 		if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime());
+			jsonMap.put(Constants.CREATED_TIME, DateUtil.getFormattedDateInString(value.getCreatedTime()).split(" ")[0]);
 		}
 		if (value.getUpdatedTime() != null) {
-			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime());
+			jsonMap.put(Constants.UPDATED_TIME, DateUtil.getFormattedDateInString(value.getUpdatedTime()).split(" ")[0]);
 		}
 		if (value.getCreatedTime() != null) {
-			jsonMap.put(Constants.C_T, value.getCreatedTime());
+			jsonMap.put(Constants.C_T, DateUtil.getFormattedDateInString(value.getCreatedTime()).split(" ")[1]);
 		}
 	}
 
@@ -362,27 +355,17 @@ public class TicketsRequestInterceptor {
 
 	public void setValuesOnCreate2(Ticket value, Map<String, Object> jsonMap) throws ParseException {
 		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.C_T, value.getCreatedTime());
+			jsonMap.put(Constants.C_T, DateUtil.getFormattedDateInString(value.getCreatedTime()).split(" ")[1]);
 		} else {
 			jsonMap.put(Constants.C_T, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getUpdatedTime()))) {
-			jsonMap.put(Constants.U_T, value.getUpdatedTime());
+			jsonMap.put(Constants.U_T, DateUtil.getFormattedDateInString(value.getUpdatedTime()).split(" ")[1]);
 		} else {
 			jsonMap.put(Constants.U_T, null);
 		}
-		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTimeTS()))) {
-			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTimeTS());
-		} else if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime());
-		} else {
-			jsonMap.put(Constants.CREATED_TIME_TS, null);
-		}
-		if (!StringUtils.isBlank(String.valueOf(value.getUpdatedTimeTS()))) {
-			jsonMap.put(Constants.UPDATED_TIME_TS, value.getUpdatedTimeTS());
-		} else {
-			jsonMap.put(Constants.UPDATED_TIME_TS, null);
-		}
+			jsonMap.put(Constants.CREATED_TIME_TS, value.getCreatedTime().getTime());
+			jsonMap.put(Constants.UPDATED_TIME_TS, value.getUpdatedTime().getTime());
 		if (!StringUtils.isBlank(String.valueOf(value.getRequestedBy()))) {
 			jsonMap.put(Constants.REQUESTED_BY, value.getRequestedBy());
 		} else {
@@ -422,12 +405,12 @@ public class TicketsRequestInterceptor {
 			jsonMap.put(Constants.MAX_RATING, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getCreatedTime()))) {
-			jsonMap.put(Constants.CREATED_TIME, value.getCreatedTime());
+			jsonMap.put(Constants.CREATED_TIME, DateUtil.getFormattedDateInString(value.getCreatedTime()).split(" ")[0]);
 		} else {
 			jsonMap.put(Constants.CREATED_TIME, null);
 		}
 		if (!StringUtils.isBlank(String.valueOf(value.getUpdatedTime()))) {
-			jsonMap.put(Constants.UPDATED_TIME, value.getUpdatedTime());
+			jsonMap.put(Constants.UPDATED_TIME, DateUtil.getFormattedDateInString(value.getUpdatedTime()).split(" ")[0]);
 		} else {
 			jsonMap.put(Constants.UPDATED_TIME, null);
 		}
@@ -458,7 +441,7 @@ public class TicketsRequestInterceptor {
 
 	private RestHighLevelClient connectToElasticSearch() {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(ELASTIC, EL_STIC123));
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(Constants.ELASTIC, Constants.EL_STIC123));
 
 		HttpClientConfigCallback httpClientConfigCallback = new HttpClientConfigCallback() {
 			@Override

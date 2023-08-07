@@ -113,10 +113,6 @@ import org.upsmf.grievance.util.Sql.Apps;
 
 @Repository(Constants.TICKET_DAO)
 public class TicketDaoImpl implements TicketDao {
-	private static final String EL_STIC123 = "El@stic123";
-
-	private static final String ELASTIC = "elastic";
-
 	private static final String T = "T";
 
 	private static final String COUNT = "count";
@@ -1468,7 +1464,7 @@ public class TicketDaoImpl implements TicketDao {
 
 	private RestHighLevelClient connectToElasticSearch() {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(ELASTIC, EL_STIC123));
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(Constants.ELASTIC, Constants.EL_STIC123));
 		HttpClientConfigCallback r = new RestClientBuilder.HttpClientConfigCallback() {
 			@Override
 			public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {

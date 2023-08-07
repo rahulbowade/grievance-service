@@ -1,8 +1,10 @@
 package org.upsmf.grievance.util;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -34,6 +36,12 @@ public class DateUtil {
 		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 		format.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
 		return format.format(date);
+	}
+
+
+	public static String getFormattedDateInString(Timestamp ts) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+		return dateTimeFormatter.format(ts.toLocalDateTime());
 	}
 
 	/**
